@@ -1,0 +1,7 @@
+{
+    "type": "prbs",
+    "amplitude": 1,
+    "bandwidth": 10000,
+    "resolution": 10,
+    "sampling_freq": 100000
+}

@@ -1,0 +1,6 @@
+{
+    "amplitude": 0.5,
+    "bandwidth": 1000,
+    "resolution": 1,
+    "sampling_freq": 500000
+}
