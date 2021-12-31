@@ -9,7 +9,7 @@ function nidaq_sinesweep_measure(specs_filename, output_filename)
     Fs = params.sampling_freq;
     f_gen = params.generation_freq;
     mult = floor(Fs/f_gen);
-    P = 5;
+    P = 10;
     L = sum(params.freq_sampled_seq_len);
 
     % Print excitation parameters

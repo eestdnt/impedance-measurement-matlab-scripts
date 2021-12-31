@@ -23,6 +23,13 @@ function nidaq_prbs_measure(specs_filename, output_filename)
     x = reshape(x', mult*N*(P+P_extra), 1);
     excitation = x;
 
+    tvec = (1/Fs:1/Fs:1/Fs*length(excitation_vec))';
+    figure(1), clf();
+    stairs(tvec, excitation_vec);
+    title("Excitation signal");
+    xlabel("Time (s)");
+    grid("on");
+
     % Estimate running time
     duration = N * (P + P_extra) / f_gen;
     fprintf(" -- Estimated measurement time: %.4f seconds (%.4f minutes)\n", duration, duration/60);

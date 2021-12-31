@@ -1,9 +1,9 @@
 {
     "type": "sinesweep",
-    "amplitude": 0.5,
+    "amplitude": 0.2,
     "bandwidth": 1000,
     "start_freq": 1,
-    "count": 100,
+    "count": 1000,
     "scale": "log",
     "sampling_freq": 500000
 }

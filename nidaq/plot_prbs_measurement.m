@@ -1,14 +1,7 @@
-function plot_prbs_measurement(measurement_data_filename, reference_frf_filename)
-
-    % Load reference model data
-    ref_dat = readtable(reference_frf_filename);
-
-    fv_ref = ref_dat{:,1};
-    mag_ref = ref_dat{:,2};
-    phase_ref = ref_dat{:,3};
+function plot_prbs_measurement(measurement_data_filename)
 
     % Estimate FRF from measurement data
-    [Z, fv, Fs, signals, dfts, params] = estimate_frf_from_measurement(measurement_data_filename);
+    [Z, fv, Fs, signals, dfts, params] = estimate_frf_from_pbs_measurement(measurement_data_filename);
     A = params.seq_amplitude;
     n = params.seq_order;
     N = params.seq_length;
@@ -78,10 +71,10 @@ function plot_prbs_measurement(measurement_data_filename, reference_frf_filename
     % Plot averaged signal power spectra
     figure(3), clf();
     subplot(2, 1, 1);
-    semilogx(fv, db(abs(X)), "LineStyle", "none", "Marker", "o"), grid on, ylabel("Input power (db)");
+    semilogx(fv, db(abs(X)), "LineStyle", "none", "Marker", "o"), grid("on"), ylabel("Input power (db)");
     xlim([fv(1), f_bw]);
     subplot(2, 1, 2);
-    semilogx(fv, db(abs(Y)), "LineStyle", "none", "Marker", "o"), grid on, ylabel("Output power (db)");
+    semilogx(fv, db(abs(Y)), "LineStyle", "none", "Marker", "o"), grid("on"), ylabel("Output power (db)");
     xlim([fv(1), f_bw]);
     xlabel("Frequency (Hz)");
     sgtitle("Signal power spectra");
@@ -89,25 +82,19 @@ function plot_prbs_measurement(measurement_data_filename, reference_frf_filename
     % Bode plot
     figure(4), clf();
     subplot(2, 1, 1);
-    semilogx(fv, db(abs(Z)), "LineStyle", "none", "Marker", "o");
-    hold("on"), semilogx(fv_ref, db(mag_ref), "LineStyle", "-", "Color", "black"), hold("off");
+    semilogx(fv, db(abs(Z)), "LineStyle", "none", "Marker", "x");
     xlim([fv(1), f_bw]), ylabel("Power (db)"), grid("on");
-    legend(["Estimation", "Reference"]);
     subplot(2, 1, 2);
-    semilogx(fv, 180/pi*angle(Z), "LineStyle", "none", "Marker", "o");
-    hold("on"), semilogx(fv_ref, 180/pi*phase_ref, "LineStyle", "-", "Color", "black"), hold("off");
-    xlim([fv(1), f_bw]), xlabel("Frequency (Hz)"), ylabel("Phase (deg)"), grid("on");
+    semilogx(fv, 180/pi*angle(Z), "LineStyle", "none", "Marker", "x");
+    xlim([fv(1), f_bw]), ylabel("Phase (deg)"), grid("on"), xlabel("Frequency (Hz)");
     sgtitle("Bode plot");
 
-    % Nyquist plot
+    % Polar plot
     figure(5), clf();
     idx = 0 < fv & fv <= f_bw;
-    zv = abs(Z(idx)) .* exp(1j*angle(Z(idx)));
-    zv_ref =mag_ref .* exp(1j*phase_ref);
-    plot(real(zv), imag(zv), "LineStyle", "none", "Marker", "o");
-    hold("on"), plot(real(zv_ref), imag(zv_ref), "LineStyle", "-", "Color", "black"), hold("off");
+    zv = abs(Z(idx)).*exp(1j*angle(Z(idx)));
+    plot(real(zv), imag(zv), "LineStyle", "none", "Marker", "x");
     xlabel("Re(Z)");
     ylabel("Im(Z)");
     title("Polar plot"), grid("on");
-    legend(["Estimation", "Reference"]);
 end
