@@ -1,0 +1,5 @@
+/**/slprj
+*.slxc
+/**/blob
+*.insyncdl
+*.code-workspace

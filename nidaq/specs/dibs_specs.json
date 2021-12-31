@@ -1,0 +1,22 @@
+{
+    "amplitude": 0.5,
+    "bandwidth": 1000,
+    "prbs_resolution": 1,
+    "sampling_freq": 500000,
+    "content": [
+        {
+            "f_min": 1,
+            "f_max": 100,
+            "power_ratio": 0.7,
+            "scale": "log",
+            "count": 10
+        },
+        {
+            "f_min": 100,
+            "f_max": 1000,
+            "power_ratio": 0.3,
+            "scale": "log",
+            "count": 10
+        }
+    ]
+}
