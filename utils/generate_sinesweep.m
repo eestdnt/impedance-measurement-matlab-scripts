@@ -76,6 +76,7 @@ function [u, params] = generate_sinesweep(spec_filename)
     disp("Sinesweep ended!");
 
     params = struct();
+    params.type = "sinesweep";
     params.amplitude = A;
     params.bandwidth = f_bw;
     params.sampling_freq = Fs;

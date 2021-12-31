@@ -1,4 +1,4 @@
-function nidaq_dibs_measure(specs_filename)
+function nidaq_dibs_measure(specs_filename, output_filename)
 
     addpath("../utils");
 
@@ -56,8 +56,8 @@ function nidaq_dibs_measure(specs_filename)
     disp("Measurement stopped!");
     
     % Format the result
-    current_vec = 10*data(:,1);  % 10A/V amplification
-    voltage_vec = data(:,2);
+    inp_vec = 10*data(:,1);  % 10A/V amplification
+    out_vec = data(:,2);
 
     % Save the raw measurement data
     clear("ai", "ao", "dq", "data");
@@ -65,6 +65,6 @@ function nidaq_dibs_measure(specs_filename)
     filename = sprintf("../blob/dibs_%s.mat", filename);
     disp("Saving to file...");
     save(filename);
-    save("../blob/dibs_latest.mat");
+    save(output_filename);
     disp("Finished!");
 end

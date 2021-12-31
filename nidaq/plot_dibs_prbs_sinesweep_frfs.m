@@ -2,17 +2,17 @@
 clear();
 
 % Load sinesweep
-[Z_ref, fv_ref, ~, ~, ~, prbs_params] = estimate_frf_from_sinesweep_measurement("../blob/sinesweep_latest.mat");
+[Z_ref, fv_ref, ~, ~, ~, prbs_params] = estimate_frf_from_sinesweep_measurement("../blob/sinesweep-bat-1.mat");
 mag_ref = abs(Z_ref);
 phase_ref = angle(Z_ref);
 
 % Load PRBS
-[Z_prbs, fv_prbs, ~, ~, ~, prbs_params] = estimate_frf_from_pbs_measurement("../blob/prbs_latest.mat");
+[Z_prbs, fv_prbs, ~, ~, ~, prbs_params] = estimate_frf_from_pbs_measurement("../blob/prbs-bat-1.mat");
 mag_prbs = abs(Z_prbs);
 phase_prbs = angle(Z_prbs);
 
 % Load DIBS
-[Z_dibs, fv_dibs, ~, ~, ~, dibs_params] = estimate_frf_from_pbs_measurement("../blob/dibs_latest.mat");
+[Z_dibs, fv_dibs, ~, ~, ~, dibs_params] = estimate_frf_from_pbs_measurement("../blob/dibs-bat-1.mat");
 mag_dibs = abs(Z_dibs);
 phase_dibs = angle(Z_dibs);
 

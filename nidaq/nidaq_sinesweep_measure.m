@@ -1,4 +1,4 @@
-function nidaq_sinesweep_measure(specs_filename)
+function nidaq_sinesweep_measure(specs_filename, output_filename)
 
     addpath("../utils");
 
@@ -47,6 +47,8 @@ function nidaq_sinesweep_measure(specs_filename)
     tvec = (1/Fs:1/Fs:1/Fs*length(excitation_vec))';
     figure(1), clf();
     stairs(tvec, excitation_vec);
+    title("Excitation signal");
+    xlabel("Time (s)");
     grid("on");
 
     % Estimate running time
@@ -83,8 +85,8 @@ function nidaq_sinesweep_measure(specs_filename)
     disp("Measurement stopped!");
     
     % Format the result
-    current_vec = 10*data(:,1);  % 10A/V amplification
-    voltage_vec = data(:,2);
+    inp_vec = 10*data(:,1);  % 10A/V amplification
+    out_vec = data(:,2);
 
     % Save the raw measurement data
     clear("ai", "ao", "dq", "data");
@@ -92,6 +94,6 @@ function nidaq_sinesweep_measure(specs_filename)
     filename = sprintf("../blob/sinesweep_%s.mat", filename);
     disp("Saving to file...");
     save(filename);
-    save("../blob/sinesweep_latest.mat");
+    save(output_filename);
     disp("Finished!");
 end

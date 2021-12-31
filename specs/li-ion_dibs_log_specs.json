@@ -1,6 +1,7 @@
 {
-    "amplitude": 0.05,
-    "bandwidth": 1000,
+    "type": "dibs",
+    "amplitude": 0.1,
+    "bandwidth": 10000,
     "prbs_resolution": 1,
     "sampling_freq": 500000,
     "content": [
@@ -13,7 +14,7 @@
         },
         {
             "f_min": 10,
-            "f_max": 1000,
+            "f_max": 10000,
             "power_ratio": 0.2,
             "scale": "log",
             "count": 30

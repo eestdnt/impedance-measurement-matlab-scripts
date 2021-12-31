@@ -1,8 +1,7 @@
 function [u, params] = generate_prbs(spec_filename)
 
     % Load specification variables
-    specs_json = fileread(spec_filename);
-    specs = jsondecode(specs_json);
+    specs = jsondecode(fileread(spec_filename));
 
     % PRBS design variables
     A = specs.amplitude;
@@ -17,10 +16,11 @@ function [u, params] = generate_prbs(spec_filename)
     mult = floor(sampling_freq/f_gen);
     Fs = mult*f_gen;
 
-    %% Desigb DIBS based on an MLBS
+    %% Design DIBS based on an MLBS
     u = A*idinput(N, "prbs");
 
     params = struct();
+    params.type = "mlbs";
     params.seq_amplitude = A;
     params.bandwidth = f_bw;
     params.sampling_freq = Fs;

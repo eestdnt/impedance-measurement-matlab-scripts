@@ -1,8 +1,7 @@
 function [u, params] = generate_dibs(spec_filename)
 
     % Load specification variables
-    specs_json = fileread(spec_filename);
-    specs = jsondecode(specs_json);
+    specs = jsondecode(fileread(spec_filename));
 
     % PRBS design variables
     A = specs.amplitude;
@@ -10,7 +9,7 @@ function [u, params] = generate_dibs(spec_filename)
     f_resolution = specs.prbs_resolution;
     sampling_freq = specs.sampling_freq;
 
-    % PRBS specification variables
+    % DIBS specification variables
     f_gen = 3*f_bw;
     n = ceil(log2(f_gen/f_resolution + 1));
     N = 2^n - 1;
@@ -104,6 +103,7 @@ function [u, params] = generate_dibs(spec_filename)
     u = b;
 
     params = struct();
+    params.type = "dibs";
     params.seq_amplitude = A;
     params.bandwidth = f_bw;
     params.sampling_freq = Fs;

@@ -1,4 +1,4 @@
-function nidaq_prbs_measure(specs_filename)
+function nidaq_prbs_measure(specs_filename, output_filename)
 
     addpath("../utils");
 
@@ -66,6 +66,6 @@ function nidaq_prbs_measure(specs_filename)
     filename = sprintf("../blob/prbs_%s.mat", filename);
     disp("Saving to file...");
     save(filename);
-    save("../blob/prbs_latest.mat");
+    save(output_filename);
     disp("Finished!");
 end
