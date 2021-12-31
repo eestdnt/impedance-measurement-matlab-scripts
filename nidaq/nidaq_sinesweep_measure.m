@@ -1,4 +1,7 @@
 function nidaq_sinesweep_measure(specs_filename)
+
+    addpath("../utils");
+
     %% Generate the excitation signal
     [u, params] = generate_sinesweep(specs_filename);
     A = params.amplitude;
@@ -28,22 +31,24 @@ function nidaq_sinesweep_measure(specs_filename)
         f = f_vec(k);
         i = start_idx(k);
         N = seq_len(k);
+
+        % Extract the sine vector of frequency f
         x = u(i:i+N-1);
+
+        % Multi-sampling
         x = repmat(x, 1, mult);
         x = reshape(x', mult*N, 1);
+
+        % Repeat for P periods
         x = repmat(x, P, 1);
+
+        % Store the generated vector
         excitation_vec((i-1)*mult*P+1:mult*P*((i-1)+N)) = x;
     end
 
-    % u = repmat(u, P, 1);
-    % u = repmat(u, 1, mult);
-    % u = reshape(u', mult * L * P, 1);
-
-    u = excitation_vec;
     tvec = (1/Fs:1/Fs:1/Fs*length(excitation_vec))';
     figure(1), clf();
-    stairs(tvec, u);
-    % xlim([0, 0.5]);
+    stairs(tvec, excitation_vec);
     grid("on");
 
     % Estimate running time
@@ -76,7 +81,7 @@ function nidaq_sinesweep_measure(specs_filename)
     
     % Start the acquisition
     disp("Measurement starting...");
-    [data, ~, ~] = readwrite(dq, u, "OutputFormat", "Matrix");
+    [data, ~, ~] = readwrite(dq, excitation_vec, "OutputFormat", "Matrix");
     disp("Measurement stopped!");
     
     % Format the result

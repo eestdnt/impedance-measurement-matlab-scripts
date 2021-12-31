@@ -1,6 +1,8 @@
 % SIMULATE THE RC CIRCUIT MEASUREMENT
 function simulate(specs_filename);
 
+    addpath("../utils");
+
     % Excitation parameters
     specs_json = fileread(specs_filename);
     specs = jsondecode(specs_json);
@@ -241,6 +243,4 @@ function simulate(specs_filename);
     % grid("on");
     % legend(["Target", "Designed", "Neglected", "PRBS"]);
     % sgtitle("Frequency-domain result");
-
-    save("data.mat");
 end

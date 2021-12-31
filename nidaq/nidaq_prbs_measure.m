@@ -1,14 +1,9 @@
 function nidaq_prbs_measure(specs_filename)
-    %% Excitation design
+
+    addpath("../utils");
 
     % PRBS variables
     specs = jsondecode(fileread(specs_filename));
-    % A = specs.amplitude;
-    % f_bw = specs.bandwidth;
-    % f_resolution = specs.resolution;
-%     A = 1;
-%     f_bw = 1000;
-%     f_resolution = 1;
 
     %% Generate the excitation signal
     [u, params] = generate_prbs(specs_filename);
@@ -22,31 +17,11 @@ function nidaq_prbs_measure(specs_filename)
     P_extra = 3;
     mult = floor(Fs/f_gen);
     
-    % f_gen = 3*f_bw;
-    % n = ceil(log2(f_gen/f_resolution + 1));
-    % N = 2^n - 1;
-    % P = 5;
-    % P_extra = 3;
-    % mult = floor(specs.sampling_freq/f_gen);
-    % Fs = mult*f_gen;
-
-%     P = 10;
-%     P_extra = 1;
-%     Fs = 1*f_gen;
-%     mult = floor(Fs/f_gen);
-%     Fs = mult*f_gen;
-
-    % Build MLBS
-    % u = A * idinput(N, "prbs");
-%     [u, indicies] = generate_dibs(specs_filename, 10, 11);
-%     N = length(u);
-%     mult = floor(prbs_specs.sampling_freq/f_gen);
-%     Fs = mult*f_gen;
-
     %% Build excitation signal for NiDAQ
-    u = repmat(u, P+P_extra, 1);
-    u = repmat(u, 1, mult);
-    u = reshape(u', mult * N * (P+P_extra), 1);
+    x = repmat(u, P+P_extra, 1);
+    x = repmat(x, 1, mult);
+    x = reshape(x', mult*N*(P+P_extra), 1);
+    excitation = x;
 
     % Estimate running time
     duration = N * (P + P_extra) / f_gen;
@@ -78,7 +53,7 @@ function nidaq_prbs_measure(specs_filename)
     
     % Start the acquisition
     disp("Measurement starting...");
-    [data, ~, ~] = readwrite(dq, u, "OutputFormat", "Matrix");
+    [data, ~, ~] = readwrite(dq, excitation, "OutputFormat", "Matrix");
     disp("Measurement stopped!");
     
     % Format the result

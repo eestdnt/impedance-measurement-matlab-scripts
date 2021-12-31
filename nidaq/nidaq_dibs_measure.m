@@ -1,5 +1,6 @@
 function nidaq_dibs_measure(specs_filename)
-    %% Excitation design
+
+    addpath("../utils");
 
     % Design variables
     specs = jsondecode(fileread(specs_filename));
@@ -15,28 +16,11 @@ function nidaq_dibs_measure(specs_filename)
     P_extra = 3;
     mult = floor(Fs/f_gen);
 
-    % A = specs.amplitude;
-    % f_bw = specs.bandwidth;
-    % f_resolution = specs.prbs_resolution;
-    
-    % % Specification variables
-    % f_gen = 3*f_bw;
-    % n = ceil(log2(f_gen/f_resolution + 1));
-    % N = 2^n - 1;
-    % P = 5;
-    % P_extra = 3;
-
-    % % Build DIBS
-    % [u, indicies] = generate_dibs(specs_filename, 10, 11);
-    % N = length(u);
-    % mult = floor(specs.sampling_freq/f_gen);
-    % Fs = mult*f_gen;
-    return;
-
     %% Build excitation signal for NiDAQ
-    u = repmat(u, P+P_extra, 1);
-    u = repmat(u, 1, mult);
-    u = reshape(u', mult * N * (P+P_extra), 1);
+    x = repmat(u, P+P_extra, 1);
+    x = repmat(x, 1, mult);
+    x = reshape(x', mult*N*(P+P_extra), 1);
+    excitation_vec = x;
 
     % Estimate running time
     duration = N * (P + P_extra) / f_gen;

@@ -1,5 +1,7 @@
 function simulate_sinesweep(specs_filename);
 
+    addpath("../utils");
+
     % Excitation parameters
     specs = jsondecode(fileread(specs_filename));
 
