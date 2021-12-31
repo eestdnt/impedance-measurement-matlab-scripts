@@ -15,6 +15,7 @@ function [u, params] = generate_sinesweep(spec_filename)
     else
         f_vec = linspace(log10(f_start), log10(f_bw), count)';
     end
+    f_vec = unique(f_vec);
 
     % Specification variables
     f_gen = 100*f_bw;

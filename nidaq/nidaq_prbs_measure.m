@@ -57,15 +57,15 @@ function nidaq_prbs_measure(specs_filename)
     disp("Measurement stopped!");
     
     % Format the result
-    current_vec = 10*data(:,1);  % 10A/V amplification
-    voltage_vec = data(:,2);
+    inp_vec = 10*data(:,1);  % 10A/V amplification
+    out_vec = data(:,2);
 
     %% Save the raw measurement data
     clear("ai", "ao", "dq", "data");
     filename = datestr(datetime(), "yyyy.mm.dd__HH.MM.SS");
-    filename = sprintf("./blob/prbs_%s.mat", filename);
+    filename = sprintf("../blob/prbs_%s.mat", filename);
     disp("Saving to file...");
     save(filename);
-    save("./blob/prbs_latest.mat");
+    save("../blob/prbs_latest.mat");
     disp("Finished!");
 end

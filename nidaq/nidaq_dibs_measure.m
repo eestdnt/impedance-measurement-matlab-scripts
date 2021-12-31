@@ -5,7 +5,7 @@ function nidaq_dibs_measure(specs_filename)
     % Design variables
     specs = jsondecode(fileread(specs_filename));
 
-    %% Generate the excitation signal
+    % Generate the excitation signal
     [u, params] = generate_dibs(specs_filename);
     A = params.seq_amplitude;
     N = params.seq_length;
@@ -16,7 +16,7 @@ function nidaq_dibs_measure(specs_filename)
     P_extra = 3;
     mult = floor(Fs/f_gen);
 
-    %% Build excitation signal for NiDAQ
+    % Build excitation signal for NiDAQ
     x = repmat(u, P+P_extra, 1);
     x = repmat(x, 1, mult);
     x = reshape(x', mult*N*(P+P_extra), 1);
@@ -33,7 +33,7 @@ function nidaq_dibs_measure(specs_filename)
         return;
     end
 
-    %% Setup NiDAQ
+    % Setup NiDAQ
     disp("Setting up NIDAQ");
 
     device_name = "Dev1";
@@ -52,19 +52,19 @@ function nidaq_dibs_measure(specs_filename)
     
     % Start the acquisition
     disp("Measurement starting...");
-    [data, ~, ~] = readwrite(dq, u, "OutputFormat", "Matrix");
+    [data, ~, ~] = readwrite(dq, excitation_vec, "OutputFormat", "Matrix");
     disp("Measurement stopped!");
     
     % Format the result
     current_vec = 10*data(:,1);  % 10A/V amplification
     voltage_vec = data(:,2);
 
-    %% Save the raw measurement data
+    % Save the raw measurement data
     clear("ai", "ao", "dq", "data");
     filename = datestr(datetime(), "yyyy.mm.dd__HH.MM.SS");
-    filename = sprintf("./blob/dibs_%s.mat", filename);
+    filename = sprintf("../blob/dibs_%s.mat", filename);
     disp("Saving to file...");
     save(filename);
-    save("./blob/dibs_latest.mat");
+    save("../blob/dibs_latest.mat");
     disp("Finished!");
 end

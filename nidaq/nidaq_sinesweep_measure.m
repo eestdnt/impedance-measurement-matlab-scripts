@@ -2,27 +2,25 @@ function nidaq_sinesweep_measure(specs_filename)
 
     addpath("../utils");
 
-    %% Generate the excitation signal
+    % Generate the excitation signal
     [u, params] = generate_sinesweep(specs_filename);
     A = params.amplitude;
     f_bw = params.bandwidth;
     Fs = params.sampling_freq;
     f_gen = params.generation_freq;
     mult = floor(Fs/f_gen);
-    P = 3;
+    P = 5;
     L = sum(params.freq_sampled_seq_len);
 
-    %% Print excitation parameters
-    fprintf("Excitation specifications:\n");
-    fprintf(" - Design variables:\n");
+    % Print excitation parameters
+    fprintf("Excitation variables:\n");
     fprintf("   + Amplitude: A = %.4f\n", A);
     fprintf("   + Measurement bandwidth: f_bw = %d Hz\n", f_bw);
     fprintf("   + Sampling frequency: Fs = %d Hz\n", Fs);
-    fprintf(" - Specification variables:\n");
     fprintf("   + Generation frequency: f_gen = %d Hz\n", f_gen);
     fprintf("   + Number of applied periods: P = %d\n", P);
 
-    %% Build excitation signal for NiDAQ
+    % Build excitation signal for NiDAQ
     excitation_vec = zeros(mult*L*P, 1);
     f_vec = params.freq_vec;
     start_idx = params.freq_start_idx;
@@ -52,7 +50,7 @@ function nidaq_sinesweep_measure(specs_filename)
     grid("on");
 
     % Estimate running time
-    duration = L * P * mult / f_gen;
+    duration = L * P * mult / Fs;
     fprintf(" -- Estimated measurement time: %.4f seconds (%.4f minutes)\n", duration, duration/60);
     st = sprintf(" Measurement time is %.2f seconds (or %.2f minutes), do we continue? (Y/N [Y])\n", duration, duration/60);
     
@@ -62,7 +60,7 @@ function nidaq_sinesweep_measure(specs_filename)
         return;
     end
 
-    %% Setup NiDAQ
+    % Setup NiDAQ
     disp("Setting up NIDAQ");
 
     device_name = "Dev1";
@@ -88,12 +86,12 @@ function nidaq_sinesweep_measure(specs_filename)
     current_vec = 10*data(:,1);  % 10A/V amplification
     voltage_vec = data(:,2);
 
-    %% Save the raw measurement data
+    % Save the raw measurement data
     clear("ai", "ao", "dq", "data");
     filename = datestr(datetime(), "yyyy.mm.dd__HH.MM.SS");
-    filename = sprintf("./blob/sinesweep_%s.mat", filename);
+    filename = sprintf("../blob/sinesweep_%s.mat", filename);
     disp("Saving to file...");
     save(filename);
-    save("./blob/sinesweep_latest.mat");
+    save("../blob/sinesweep_latest.mat");
     disp("Finished!");
 end
