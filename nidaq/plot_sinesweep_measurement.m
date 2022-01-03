@@ -1,7 +1,7 @@
-function plot_sinesweep_measurement(measurement_data_filename)
+function plot_sinesweep_measurement(measurement_data_file)
 
     % Estimate FRF from measurement data
-    [Z, fv, Fs, signals, dfts, params] = estimate_frf_from_sinesweep_measurement(measurement_data_filename);
+    [Z, fv, Fs, signals, dfts, params] = estimate_frf_from_sinesweep_measurement(measurement_data_file);
     A = params.amplitude;
     f_bw = params.bandwidth;
     f_gen = params.generation_freq;

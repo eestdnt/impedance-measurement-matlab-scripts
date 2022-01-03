@@ -1,7 +1,7 @@
-function plot_prbs_measurement(measurement_data_filename)
+function plot_prbs_measurement(measurement_data_file)
 
     % Estimate FRF from measurement data
-    [Z, fv, Fs, signals, dfts, params] = estimate_frf_from_pbs_measurement(measurement_data_filename);
+    [Z, fv, Fs, signals, dfts, params] = estimate_frf_from_pbs_measurement(measurement_data_file);
     A = params.seq_amplitude;
     n = params.seq_order;
     N = params.seq_length;
@@ -22,12 +22,11 @@ function plot_prbs_measurement(measurement_data_filename)
     disp("Excitation variables:");
     fprintf("   + Amplitude: A = %.4f\n", A);
     fprintf("   + Measurement bandwidth: f_bw = %d Hz\n", f_bw);
-    fprintf("   + Desired frequency resolution: f_res = %.2f Hz\n", f_resolution); 
     fprintf("   + Sequence order (shift-register length): n = %d\n", n);
     fprintf("   + Sequence length: N = %d\n", N);
     fprintf("   + Generation frequency: f_gen = %d Hz\n", f_gen);
     fprintf("   + Sampling frequency: Fs = %d Hz\n", Fs);
-    fprintf("   + Frequency resolution: resolution = %.4f Hz\n", f_gen/N);
+    fprintf("   + Frequency resolution: %.4f Hz\n", f_gen/N);
     fprintf("   + Number of applied periods: P = %d\n", P);
     fprintf("   + Number of estimated transient periods: P_extra = %d\n", P_extra);
 
@@ -58,7 +57,7 @@ function plot_prbs_measurement(measurement_data_filename)
     % Free up memory
     clear("inp_vec", "out_vec");
 
-    %% DFT-window plot
+    % DFT-window plot
     figure(2), clf();
     tv = (1/Fs:1/Fs:1/Fs*length(x))';
     subplot(2, 1, 1);
