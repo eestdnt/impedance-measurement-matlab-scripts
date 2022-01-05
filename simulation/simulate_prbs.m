@@ -1,44 +1,19 @@
-% SIMULATE THE RC CIRCUIT MEASUREMENT
-function simulate(specs_filename);
+function simulate_prbs(specs_filename);
 
     addpath("../utils");
 
-    % Excitation parameters
-    specs_json = fileread(specs_filename);
-    specs = jsondecode(specs_json);
+    % Read specifications
+    specs = jsondecode(fileread(specs_filename));
 
-    % SYSTEM DEFINITION
+    % Reference model definition
     s = tf("s");
     G_ref = 1 / (1 + 5.852e-4 * s);
 
-    % % PRBS DESIGN VARIABLES
-    % % A = specs.amplitude;
-    % f_bw = specs.bandwidth;
-    % % f_resolution = specs.resolution;
-    % f_gen = specs.bandwidth*3;
-
-    % % % PRBS SPECIFICATION VARIABLES
-    % % f_gen = 10*f_bw;
-    % % n = ceil(log2(f_gen/f_resolution + 1));
-    % % N = 2^n - 1;
-    % P = 10;
-    % P_extra = 1;
-    % Fs = 1*f_gen;
-    % mult = floor(Fs/f_gen);
-    % Fs = mult*f_gen;
-
-    % % BUILD MLBS
-    % % u = A*idinput(N, "prbs");
-    % [u, indicies] = generate_dibs(specs_filename, 10, 11);
-    % N = length(u);
-    % mult = floor(specs.sampling_freq/f_gen);
-    % Fs = mult*f_gen;
-
     switch specs.type
         case "dibs"
-            [u, params] = generate_dibs(specs_filename);
+            [u, params] = generate_dibs(jsondecode(fileread(specs_filename)));
         otherwise
-            [u, params] = generate_prbs(specs_filename);
+            [u, params] = generate_prbs(jsondecode(fileread(specs_filename)));
     end
 
     A = params.seq_amplitude;
@@ -51,7 +26,7 @@ function simulate(specs_filename);
     P_extra = 1;
     mult = floor(Fs/f_gen);
 
-    %% Print excitation parameters
+    % Print excitation parameters
     fprintf("Excitation specifications:\n");
     fprintf(" - Design variables:\n");
     fprintf("   + Amplitude: A = %.4f\n", A);
@@ -78,31 +53,31 @@ function simulate(specs_filename);
         end
     end
     
-    %% NOISE LEVEl
+    % Noise level
     noise_power = 1e-5;
 
-    %% EXCITATION VARIABLES
+    % Excitation variables
     excitation_time_vec = (0:1/f_gen:((P+P_extra)*N - 1)/f_gen)';
     excitation_vec = repmat(u, P+P_extra, 1);
     inp_noise_vec = wgn(length(excitation_vec), 1, noise_power);
     out_noise_vec = wgn(length(excitation_vec), 1, noise_power);
     sim_duration = (P+P_extra)*N/f_gen;
 
-    %% SIMULATE
+    % Simulate
     options = simset('SrcWorkspace','current');
     sim_out = sim("measurement_setup.slx", [], options);
 
-    %% MEASUREMENT RESULT ANALYSIS
+    % Meaurement result analysis
 
-    % FORMAT THE RESULT
+    % Format the result
     x = inp_vec(1:end-1);
     y = out_vec(1:end-1);
 
-    % SKIPPING TRANSIENTS
+    % Skip the transients
     x = x(P_extra*mult*N+1:end);
     y = y(P_extra*mult*N+1:end);
 
-    % AVERAGE DFT
+    % Average DFT
     Nx = zeros(mult*N,P);
     for i=1:P
         X = fft(x((i-1)*mult*N+1:i*mult*N));
@@ -110,11 +85,11 @@ function simulate(specs_filename);
     end
     % fprintf("Noise variance: %.2f\n", var(inp_noise_vec));
 
-    % AVERAGING
+    % Average
     x = mean(reshape(x,mult*N,P),2);
     y = mean(reshape(y,mult*N,P),2);
 
-    % NOISE VARIANCES
+    % Noise variances
     var_x = zeros(mult*N,1);
     for i=1:mult*N
         var_x(i) = var(Nx(i,:));
@@ -124,13 +99,13 @@ function simulate(specs_filename);
     title("Input noise variance");
     grid("on");
 
-    % NOISE SIGNALS
+    % Noise signals
     figure(6), clf();
     semilogx(Nx(:,1));
     title("Input noise PSD");
     grid("on");
 
-    % PLOT THE SIGNALS
+    % Plot the signals
     figure(1), clf();
     tv = (1/Fs:1/Fs:1/Fs*length(x))';
     subplot(2,1,1);
@@ -140,22 +115,22 @@ function simulate(specs_filename);
     plot(tv,y), grid on, ylabel("Voltage (V)"), title("Output voltage (V)");
     xlabel("Time (s)");
 
-    %% FFT ANALYSIS
+    % DFT analysis
 
-    % FFT
+    % DFT
     X = fft(x);
     Y = fft(y);
     freq_step = Fs/length(X);
     fv = (0:freq_step:freq_step*(length(X)-1))';
 
-    %% COMPENSATION FOR PRBS
+    % ZOH processing
     Hk = @(k) (1 - exp(-1j*k*2*pi/N)) ./ (1j*k*2*pi/N);
     L = length(X);
     idx = (2:floor((L-1)/2)+1)';
     X(idx) = X(idx) .* Hk(idx-1);
     X(L-idx+2) = conj(X(idx));
 
-    % MLBS POWER SPECTRUM
+    % MLBS power spectrum
     figure(2), clf();
     subplot(2,1,1);
     semilogx(fv, db(abs(X)), "LineStyle", "none", "Marker", "o");
@@ -167,7 +142,7 @@ function simulate(specs_filename);
     grid("on");
     title("Excitation power spectrum");
 
-    % OUTPUT SIGNAL POWER SPECTRUM
+    % Output signal power spectrum
     figure(4), clf();
     subplot(2,1,1);
     semilogx(fv, db(abs(Y)), "LineStyle", "none", "Marker", "o");
@@ -178,69 +153,36 @@ function simulate(specs_filename);
     grid("on");
     title("Output power spectrum");
 
-    % COMPUTE RC CIRCUIT ANALYTICAL MODEL
-    [mag,phase,~] = bode(G_ref, 2*pi*fv);
+    % Reference model
+    [mag, phase, ~] = bode(G_ref, 2*pi*fv);
     mag = reshape(mag, numel(mag), 1);
     phase = reshape(phase, numel(phase), 1);
 
-
-    % BODE PLOT
+    % Reference bode plot
     figure(3), clf();
-
-    % MAGNITUDE PLOT
     subplot(2,1,1);
     semilogx(fv, db(mag), "LineStyle", "-");
     xlim([freq_step, f_bw]), ylabel("Power (db)"), grid("on");
-
-    % PHASE PLOT
     subplot(2,1,2);
     semilogx(fv, phase, "LineStyle", "-");
     xlim([freq_step, f_bw]), xlabel("Frequency (Hz)"), ylabel("Phase (deg)"), grid on;
+    sgtitle("Bode plot");
 
-    sgtitle("RC circuit impedance Bode plot");
-
-    % COMPUTE SYSTEM BODE PLOT
+    % Estimation bode plot
     G = Y./X;
-
-    if specs.type == "dibs"
+    if params.type == "dibs"
         idx = params.indicies;
         fv = fv(idx);
         G = G(idx);
     end
-
     figure(3);
-
     subplot(2,1,1);
     hold("on");
     plot(fv, db(abs(G)), "LineStyle", "none", "Marker", ".");
     hold("off");
     legend(["Measured", "Reference"]);
-
     subplot(2,1,2);
     hold("on");
     plot(fv, 180/pi*angle(G), "LineStyle", "none", "Marker", ".");
     hold("off");
-
-    %% Plot DIBS result
-
-    % % Plot time-domain result
-    % figure(4), clf();
-    % plot(u, "LineStyle", "none", "Marker", "o");
-    % hold("on"), plot(b, "LineStyle", "none", "Marker", "x"), hold("off");
-    % legend(["PRBS", "DIBS"]);
-    % title("Time-domain result");
-
-    % % Plot frequency-domain result
-    % figure(5), clf();
-    % semilogx(fv, db(abs(D)), "LineStyle", "none", "Marker", "o");
-    % idx = [specified_indices; length(B)-specified_indices+1];
-    % idx_other = setdiff(1:length(B),idx);
-    % hold("on"), plot(fv(idx), db(abs(B(idx))), "LineStyle", "none", "Marker", "x"), hold("off");
-    % hold("on"), plot(fv(idx_other), db(abs(B(idx_other))), "LineStyle", "none", "Marker", "."), hold("off");
-    % hold("on"), plot(fv, db(abs(Q)), "LineStyle", "none", "Marker", "."), hold("off");
-    % xlim([fv(2), fv(mid_idx)]);
-    % ylabel("Power (db)");
-    % grid("on");
-    % legend(["Target", "Designed", "Neglected", "PRBS"]);
-    % sgtitle("Frequency-domain result");
 end

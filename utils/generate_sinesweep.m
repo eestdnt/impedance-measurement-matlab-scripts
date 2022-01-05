@@ -1,8 +1,4 @@
-function [u, params] = generate_sinesweep(spec_filename)
-
-    % Load specification variables
-    specs = jsondecode(fileread(spec_filename));
-
+function [u, params] = generate_sinesweep(specs)
     % Design variables
     A = specs.amplitude;
     f_bw = specs.bandwidth;

@@ -2,15 +2,12 @@ function simulate_sinesweep(specs_filename);
 
     addpath("../utils");
 
-    % Excitation parameters
-    specs = jsondecode(fileread(specs_filename));
-
     % SYSTEM DEFINITION
     s = tf("s");
     G_ref = 1 / (1 + 5.852e-4 * s);
 
     % Generate a sinesweep
-    [u, params] = generate_sinesweep(specs_filename);
+    [u, params] = generate_sinesweep(jsondecode(fileread(specs_filename)));
     A = params.amplitude;
     f_bw = params.bandwidth;
     Fs = params.sampling_freq;
@@ -29,17 +26,6 @@ function simulate_sinesweep(specs_filename);
     fprintf("   + Generation frequency: f_gen = %d Hz\n", f_gen);
     fprintf("   + Number of applied periods: P = %d\n", P);
     % fprintf("   + Number of estimated transient periods: P_extra = %d\n", P_extra);
-
-    % fprintf(" - Frequency content:\n");
-    % freq_specs = params.freq_content;
-    % for k = 1:length(freq_specs)
-    %     f_min = freq_specs(k).f_min;
-    %     f_max = freq_specs(k).f_max;
-    %     power = A^2 * N^2 * freq_specs(k).power_ratio;
-    %     count = freq_specs(k).count;
-
-    %     fprintf("   + f_start: %.2f Hz, f_end: %2.f Hz, count: %d, power: %.2f dB\n", f_min, f_max, count, db(power));
-    % end
     
     %% Noise level
     noise_power = 1e-5;

@@ -1,7 +1,4 @@
-function [u, params] = generate_prbs(spec_filename)
-
-    % Load specification variables
-    specs = jsondecode(fileread(spec_filename));
+function [u, params] = generate_prbs(specs)
 
     % PRBS design variables
     A = specs.amplitude;
