@@ -48,14 +48,12 @@ sgtitle("Time-domain signals (1 excitation period)");
 X = fft(x);
 Y = fft(y);
 
-%% COMPENSATION
-
-% ZOH
-Hk = @(k,L) (1 - exp(-1j*k*2*pi/L)) ./ (1j*k*2*pi/L);
-L = length(X);
-idx = (2:floor((L-1)/2)+1)';
-% X(idx) = X(idx) .* Hk(idx-1, L);
-X(L-idx+2) = conj(X(idx));
+% % ZOH
+% Hk = @(k,L) (1 - exp(-1j*k*2*pi/L)) ./ (1j*k*2*pi/L);
+% L = length(X);
+% idx = (2:floor((L-1)/2)+1)';
+% % X(idx) = X(idx) .* Hk(idx-1, L);
+% X(L-idx+2) = conj(X(idx));
 
 %% DFT
 freq_step = Fs/length(X);

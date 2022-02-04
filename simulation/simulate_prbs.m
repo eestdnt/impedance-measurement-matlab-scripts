@@ -123,12 +123,12 @@ function simulate_prbs(specs_filename);
     freq_step = Fs/length(X);
     fv = (0:freq_step:freq_step*(length(X)-1))';
 
-    % ZOH processing
-    Hk = @(k) (1 - exp(-1j*k*2*pi/N)) ./ (1j*k*2*pi/N);
-    L = length(X);
-    idx = (2:floor((L-1)/2)+1)';
-    X(idx) = X(idx) .* Hk(idx-1);
-    X(L-idx+2) = conj(X(idx));
+    % % ZOH processing
+    % Hk = @(k) (1 - exp(-1j*k*2*pi/N)) ./ (1j*k*2*pi/N);
+    % L = length(X);
+    % idx = (2:floor((L-1)/2)+1)';
+    % X(idx) = X(idx) .* Hk(idx-1);
+    % X(L-idx+2) = conj(X(idx));
 
     % MLBS power spectrum
     figure(2), clf();

@@ -1,7 +1,3 @@
-%% BATTERY IMPEDANCE MEASUREMENT DATA ANALYSIS FROM FILE
-% AUTHOR: MINH TRAN
-
-%% CLEAR WORKSPACE AND FIGURES
 clear();
 figure(3), clf(), subplot(2,1,1), semilogx([NaN], [NaN]), subplot(2,1,2), semilogx([NaN], [NaN]);
 figure(4), clf(), subplot(2,1,1), semilogx([NaN], [NaN]), subplot(2,1,2), semilogx([NaN], [NaN]);
@@ -63,7 +59,7 @@ for k = 1:length(f_vec)
     plot_frf();
 end
 
-Q_full = 2.850;
+Q_full = 2.850; % ???
 fprintf("Total discharge: %.4f Ah (%.4f %%)\n", abs(Q), Q/Q_full);
 
 mat = [f_vec', db(abs(Z_vec)), 180/pi*angle(Z_vec)];
