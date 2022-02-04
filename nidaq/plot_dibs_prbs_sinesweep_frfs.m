@@ -1,18 +1,18 @@
-%% BATTERY IMPEDANCE MEASUREMENT DATA ANALYSIS WITH DIBS, PRBS AND SINESWEEP REFERENCE (VENABLE MODEL 3120)
-function plot_dibs_prbs_sinesweep_measurements(sinesweep_file, prbs_file, dibs_file)
+% Plot multiple FRF estimations from multiple measurements
+function plot_dibs_prbs_sinesweep_measurements(sinesweep_filename, prbs_filename, dibs_filename)
 
     % Load sinesweep
-    [Z_ref, fv_ref, ~, ~, ~, prbs_params] = estimate_frf_from_sinesweep_measurement(sinesweep_file);
+    [Z_ref, fv_ref, ~, ~, ~, prbs_params] = estimate_frf_from_sinesweep_measurement(sinesweep_filename);
     mag_ref = abs(Z_ref);
     phase_ref = angle(Z_ref);
 
     % Load PRBS
-    [Z_prbs, fv_prbs, prbs_sampling_freq, prbs_signals, prbs_dfts, prbs_params] = estimate_frf_from_pbs_measurement(prbs_file);
+    [Z_prbs, fv_prbs, prbs_sampling_freq, prbs_signals, prbs_dfts, prbs_params] = estimate_frf_from_pbs_measurement(prbs_filename);
     mag_prbs = abs(Z_prbs);
     phase_prbs = angle(Z_prbs);
 
     % Load DIBS
-    [Z_dibs, fv_dibs, dibs_sampling_freq, dibs_signals, dibs_dfts, dibs_params] = estimate_frf_from_pbs_measurement(dibs_file);
+    [Z_dibs, fv_dibs, dibs_sampling_freq, dibs_signals, dibs_dfts, dibs_params] = estimate_frf_from_pbs_measurement(dibs_filename);
     mag_dibs = abs(Z_dibs);
     phase_dibs = angle(Z_dibs);
 
