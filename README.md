@@ -1,4 +1,4 @@
-# Nonparametric frequency-response measurement
+# Impedance frequency-response measurement
 
 This repository contains MATLAB scripts for measuring internal impedance of power-electronic converters and batteries.
 
