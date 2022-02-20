@@ -1,10 +1,14 @@
 function [frf, freq_vec, sampling_freq, signals, dfts, excitation_params] = estimate_frf_from_measurement(measurement_data_filename)
 
+    % ZOH
+    Hw = @(w,w0) (1.-exp(-1j*w*2*pi/w0)) ./ (1j*w*2*pi/w0);
+    Hk = @(k,N,Fz,Fs) Hw(k/N*2*pi*Fs,2*pi*Fz);
+    % % Hk = @(k,L) (1 - exp(-1j*k*2*pi/L)) ./ (1j*k*2*pi/L);
+
     % Load measurement data
     load(measurement_data_filename);
 
     % DFT analysis
-    %
     f_vec = params.freq_vec;
     start_idx = params.freq_start_idx;
     seq_len = params.freq_sampled_seq_len;
@@ -13,8 +17,8 @@ function [frf, freq_vec, sampling_freq, signals, dfts, excitation_params] = esti
     X_vec = zeros(length(f_vec), 1);
     Y_vec = zeros(length(f_vec), 1);
 
-    x_averaged = zeros(length(inp_vec)/P, 1);
-    y_averaged = zeros(length(out_vec)/P, 1);
+    x_averaged = zeros(length(inp_vec)/(P+P_extra), 1);
+    y_averaged = zeros(length(out_vec)/(P+P_extra), 1);
 
     for k = 1:length(f_vec)
 
@@ -24,8 +28,12 @@ function [frf, freq_vec, sampling_freq, signals, dfts, excitation_params] = esti
         N = seq_len(k);
 
         % Extract signal vectors
-        x = inp_vec(P*mult*(start_idx(k)-1)+1:P*mult*(start_idx(k)-1+seq_len(k)));
-        y = out_vec(P*mult*(start_idx(k)-1)+1:P*mult*(start_idx(k)-1+seq_len(k)));
+        x = inp_vec((P+P_extra)*mult*(start_idx(k)-1)+1:(P+P_extra)*mult*(start_idx(k)-1+seq_len(k)));
+        y = out_vec((P+P_extra)*mult*(start_idx(k)-1)+1:(P+P_extra)*mult*(start_idx(k)-1+seq_len(k)));
+
+        % Skip transients
+        x = x(P_extra*mult*seq_len(k)+1:end);
+        y = y(P_extra*mult*seq_len(k)+1:end);
 
         % Average the signals
         x = mean(reshape(x, mult*N, P), 2);
@@ -36,9 +44,17 @@ function [frf, freq_vec, sampling_freq, signals, dfts, excitation_params] = esti
         % DFT
         X = fft(x);
         Y = fft(y);
-        Z = Y./X;
         freq_step = Fs/length(X);
         fv = (0:freq_step:freq_step*(length(X)-1))';
+        
+        % Phase compensation
+        L = length(X);
+        idx = (2:floor((L-1)/2)+1)';
+        X(idx) = X(idx) .* Hk(idx-1,L,f_gen*mult,Fs);
+        X(L-idx+2) = conj(X(idx));
+
+        % Compute target system frequency response
+        Z = Y./X;
 
         idx = find(fv > 0 & f-freq_step < fv & fv < f+freq_step, 1);
         fv = fv(idx);

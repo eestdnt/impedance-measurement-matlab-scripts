@@ -1,6 +1,10 @@
-function simulate_prbs(specs_filename);
+function simulate_prbs(specs_filename)
 
     addpath("../utils");
+
+    % ZOH
+    Hw = @(w,w0) (1 - exp(-1j*w*2*pi/w0)) ./ (1j*w*2*pi/w0);
+    Hk = @(k,N,Fz,Fs) Hw(k/N*2*pi*Fs,2*pi*Fz);
 
     % Read specifications
     specs = jsondecode(fileread(specs_filename));
@@ -61,6 +65,10 @@ function simulate_prbs(specs_filename);
     excitation_vec = repmat(u, P+P_extra, 1);
     inp_noise_vec = wgn(length(excitation_vec), 1, noise_power);
     out_noise_vec = wgn(length(excitation_vec), 1, noise_power);
+    if specs.has_noise == false
+        inp_noise_vec = zeros(size(inp_noise_vec));
+        out_noise_vec = zeros(size(out_noise_vec));
+    end
     sim_duration = (P+P_extra)*N/f_gen;
 
     % Simulate
@@ -123,12 +131,12 @@ function simulate_prbs(specs_filename);
     freq_step = Fs/length(X);
     fv = (0:freq_step:freq_step*(length(X)-1))';
 
-    % % ZOH processing
+    % Phase compensation
     % Hk = @(k) (1 - exp(-1j*k*2*pi/N)) ./ (1j*k*2*pi/N);
-    % L = length(X);
-    % idx = (2:floor((L-1)/2)+1)';
-    % X(idx) = X(idx) .* Hk(idx-1);
-    % X(L-idx+2) = conj(X(idx));
+    L = length(X);
+    idx = (2:floor((L-1)/2)+1)';
+    X(idx) = X(idx) .* Hk(idx-1,L,f_gen*mult,Fs);
+    X(L-idx+2) = conj(X(idx));
 
     % MLBS power spectrum
     figure(2), clf();
