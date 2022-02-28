@@ -2,6 +2,9 @@ function simulate_prbs(specs_filename)
 
     addpath("../utils");
 
+    % Simulation settings
+    noise_enabled = 1;
+
     % ZOH
     Hw = @(w,w0) (1 - exp(-1j*w*2*pi/w0)) ./ (1j*w*2*pi/w0);
     Hk = @(k,N,Fz,Fs) Hw(k/N*2*pi*Fs,2*pi*Fz);
@@ -65,7 +68,7 @@ function simulate_prbs(specs_filename)
     excitation_vec = repmat(u, P+P_extra, 1);
     inp_noise_vec = wgn(length(excitation_vec), 1, noise_power);
     out_noise_vec = wgn(length(excitation_vec), 1, noise_power);
-    if specs.has_noise == false
+    if noise_enabled == false
         inp_noise_vec = zeros(size(inp_noise_vec));
         out_noise_vec = zeros(size(out_noise_vec));
     end

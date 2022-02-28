@@ -1,7 +1,0 @@
-{
-    "type": "mlbs",
-    "amplitude": 0.2,
-    "bandwidth": 10000,
-    "resolution": 1,
-    "sampling_freq": 500000
-}

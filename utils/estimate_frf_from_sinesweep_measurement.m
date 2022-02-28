@@ -50,12 +50,13 @@ function [frf, freq_vec, sampling_freq, signals, dfts, excitation_params] = esti
         % Phase compensation
         L = length(X);
         idx = (2:floor((L-1)/2)+1)';
-        X(idx) = X(idx) .* Hk(idx-1,L,f_gen*mult,Fs);
+        X(idx) = X(idx) .* Hk(idx-1, L, f_gen*mult, Fs);
         X(L-idx+2) = conj(X(idx));
 
         % Compute target system frequency response
         Z = Y./X;
 
+        % Select the correct sinewave frequency
         idx = find(fv > 0 & f-freq_step < fv & fv < f+freq_step, 1);
         fv = fv(idx);
         X = X(idx);
@@ -77,12 +78,14 @@ function [frf, freq_vec, sampling_freq, signals, dfts, excitation_params] = esti
     signals.out_vec = out_vec;
     signals.averaged_inp_vec = x_averaged;
     signals.averaged_out_vec = y_averaged;
-
+    
     dfts = struct();
     dfts.inp_dft_vec = X_vec;
     dfts.out_dft_vec = Y_vec;
-
+    
     excitation_params = params;
+    excitation_params.start_idx = start_idx;
+    excitation_params.seq_len = seq_len;
     excitation_params.P = P;
-    excitation_params.P_extra = 0;
+    excitation_params.P_extra = P_extra;
 end

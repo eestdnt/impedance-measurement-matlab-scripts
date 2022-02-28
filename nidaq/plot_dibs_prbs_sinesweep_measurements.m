@@ -1,20 +1,20 @@
 % Plot multiple FRF estimations from multiple measurements
 function plot_dibs_prbs_sinesweep_measurements(sinesweep_filename, prbs_filename, dibs_filename)
 
-    % Load sinesweep
+    % Obtain sinesweep measurement
     [Z_ref, fv_ref, ~, ~, ~, prbs_params] = estimate_frf_from_sinesweep_measurement(sinesweep_filename);
     mag_ref = abs(Z_ref);
-    phase_ref = angle(Z_ref);
+    phase_ref = unwrap(angle(Z_ref));
 
-    % Load PRBS
+    % Obtain PRBS measurement
     [Z_prbs, fv_prbs, prbs_sampling_freq, prbs_signals, prbs_dfts, prbs_params] = estimate_frf_from_pbs_measurement(prbs_filename);
     mag_prbs = abs(Z_prbs);
-    phase_prbs = angle(Z_prbs);
+    phase_prbs = unwrap(angle(Z_prbs)) - 4*pi;
 
-    % Load DIBS
+    % Obtain DIBS measurement
     [Z_dibs, fv_dibs, dibs_sampling_freq, dibs_signals, dibs_dfts, dibs_params] = estimate_frf_from_pbs_measurement(dibs_filename);
     mag_dibs = abs(Z_dibs);
-    phase_dibs = angle(Z_dibs);
+    phase_dibs = unwrap(angle(Z_dibs));
 
     % Plot properties
     f_min = max([fv_ref(2), fv_dibs(2), fv_prbs(2)]);
@@ -23,7 +23,6 @@ function plot_dibs_prbs_sinesweep_measurements(sinesweep_filename, prbs_filename
 
     % Bode plot
     figure(1), clf();
-
     subplot(2, 1, 1);
     semilogx(fv_prbs, db(mag_prbs), "LineStyle", "none", "Marker", ".", "Color", "blue");
     hold("on");
@@ -31,9 +30,8 @@ function plot_dibs_prbs_sinesweep_measurements(sinesweep_filename, prbs_filename
     plot(fv_ref, db(mag_ref), "LineStyle", "-", "Color", "black");
     hold("off");
     xlim([f_min, f_max]);
-    xlabel("Frequency (Hz)"), ylabel("Power (db)"), grid("on");
+    xlabel("Frequency (Hz)"), ylabel("Amplitude (db)"), grid("on");
     legend(legend_str_arr);
-
     subplot(2, 1, 2);
     semilogx(fv_prbs, 180/pi*phase_prbs, "LineStyle", "none", "Marker", ".", "Color", "blue");
     hold("on");

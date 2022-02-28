@@ -1,5 +1,9 @@
 function [frf, freq_vec, sampling_freq, signals, dfts, excitation_params] = estimate_frf_from_pbs_measurement(measurement_data_filename)
 
+    % ZOH
+    Hw = @(w,w0) (1.-exp(-1j*w*2*pi/w0)) ./ (1j*w*2*pi/w0);
+    Hk = @(k,N,Fz,Fs) Hw(k/N*2*pi*Fs,2*pi*Fz);
+
     % Load measurement data
     load(measurement_data_filename);
 
@@ -21,6 +25,13 @@ function [frf, freq_vec, sampling_freq, signals, dfts, excitation_params] = esti
     freq_step = Fs/length(X);
     fv = (0:freq_step:freq_step*(length(X)-1))';
 
+    % Phase compensation
+    L = length(X);
+    idx = (2:floor((L-1)/2)+1)';
+    X(idx) = X(idx) .* Hk(idx-1, L, f_gen*mult, Fs);
+    X(L-idx+2) = conj(X(idx));
+
+    % Compute frequency response
     Z = Y./X;
 
     if params.type == "dibs"

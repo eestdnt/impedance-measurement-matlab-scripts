@@ -5,6 +5,5 @@
     "start_freq": 10,
     "count": 10,
     "scale": "log",
-    "sampling_freq": 500000,
-    "has_noise": true
+    "sampling_freq": 500000
 }

@@ -8,7 +8,7 @@ function [u, params] = generate_sinesweep(specs)
     f_vec = zeros(specs.count, 1);
 
     if specs.scale == 'log'
-        f_vec = floor(logspace(log10(f_start), log10(f_bw), count))';
+        f_vec = logspace(log10(f_start), log10(f_bw), count)';
     else
         f_vec = linspace(log10(f_start), log10(f_bw), count)';
     end
