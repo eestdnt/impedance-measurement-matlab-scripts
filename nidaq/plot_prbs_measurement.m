@@ -88,7 +88,7 @@ function plot_prbs_measurement(measurement_data_file)
     xlim([fv(1), f_bw]), ylabel('Phase (deg)'), grid('on'), xlabel('Frequency (Hz)');
     sgtitle('Bode plot');
 
-    % Polar plot
+    % Nyquist plot
     figure(5), clf();
     idx = 0 < fv & fv <= f_bw;
     zv = abs(Z(idx)).*exp(1j*angle(Z(idx)));

@@ -12,22 +12,34 @@ function nidaq_dibs_measure(specs_filename, output_filename)
     f_bw = params.bandwidth;
     f_gen = params.generation_freq;
     Fs = params.sampling_freq;
+    n = floor(log2(N+1));
     P = 5;
     P_extra = 3;
     mult = floor(Fs/f_gen);
+
+    % Print excitation parameters
+    disp('Excitation variables:');
+    fprintf('   + Amplitude: A = %.4f\n', A);
+    fprintf('   + Measurement bandwidth: f_bw = %d Hz\n', f_bw);
+    fprintf('   + Sequence order (shift-register length): n = %d\n', n);
+    fprintf('   + Sequence length: N = %d\n', N);
+    fprintf('   + Generation frequency: f_gen = %d Hz\n', f_gen);
+    fprintf('   + Sampling frequency: Fs = %d Hz\n', Fs);
+    fprintf('   + Number of applied periods: P = %d\n', P);
+    fprintf('   + Number of extra (transient) periods: P_extra = %d\n', P_extra);
 
     % Build excitation signal for NiDAQ
     x = repmat(u, P+P_extra, 1);
     x = repmat(x, 1, mult);
     x = reshape(x', mult*N*(P+P_extra), 1);
-    excitation_vec = x + specs.input_bias;
+    excitation_vec = x;
 
-    tvec = (1/Fs:1/Fs:1/Fs*length(excitation_vec))';
-    figure(1), clf();
-    stairs(tvec, excitation_vec);
-    title('Excitation signal');
-    xlabel('Time (s)');
-    grid('on');
+    % tvec = (1/Fs:1/Fs:1/Fs*length(excitation_vec))';
+    % figure(1), clf();
+    % stairs(tvec, excitation_vec);
+    % title('Excitation signal');
+    % xlabel('Time (s)');
+    % grid('on');
 
     % Estimate running time
     duration = N * (P + P_extra) / f_gen;

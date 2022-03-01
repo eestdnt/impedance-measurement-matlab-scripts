@@ -51,12 +51,12 @@ function nidaq_sinesweep_measure(specs_filename, output_filename)
         excitation_vec((i-1)*mult*(P+P_extra)+1:mult*(P+P_extra)*((i-1)+N)) = x;
     end
 
-    tvec = (1/Fs:1/Fs:1/Fs*length(excitation_vec))';
-    figure(1), clf();
-    stairs(tvec, excitation_vec);
-    title('Excitation signal');
-    xlabel('Time (s)');
-    grid('on');
+    % tvec = (1/Fs:1/Fs:1/Fs*length(excitation_vec))';
+    % figure(1), clf();
+    % stairs(tvec, excitation_vec);
+    % title('Excitation signal');
+    % xlabel('Time (s)');
+    % grid('on');
 
     % Estimate running time
     duration = L * (P+P_extra) * mult / Fs;

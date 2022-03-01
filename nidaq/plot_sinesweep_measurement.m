@@ -90,8 +90,8 @@ function plot_sinesweep_measurement(measurement_data_file)
     figure(5), clf();
     idx = 0 < fv & fv <= f_bw;
     zv = abs(Z(idx)) .* exp(1j*angle(Z(idx)));
-    plot(real(zv), imag(zv), 'LineStyle', 'none', 'Marker', 'x');
+    plot(real(zv), -imag(zv), 'LineStyle', 'none', 'Marker', 'x');
     xlabel('Re(Z)');
-    ylabel('Im(Z)');
+    ylabel('-Im(Z)');
     title('Polar plot'), grid('on');
 end

@@ -7,7 +7,7 @@ function [u, params] = generate_prbs(specs)
     sampling_freq = specs.sampling_freq;
 
     % PRBS specification variables
-    f_gen = 4*f_bw;
+    f_gen = 3*f_bw;
     n = ceil(log2(f_gen/f_resolution + 1));
     N = 2^n - 1;
     mult = floor(sampling_freq/f_gen);
