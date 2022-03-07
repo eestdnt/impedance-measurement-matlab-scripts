@@ -3,3 +3,4 @@
 /**/blob
 *.insyncdl
 *.code-workspace
+*.func-args
