@@ -25,7 +25,7 @@ function [frf, freq_vec, sampling_freq, signals, dfts, excitation_params] = esti
     freq_step = Fs/length(X);
     fv = (0:freq_step:freq_step*(length(X)-1))';
 
-    % Phase compensation
+    % Phase compensation (due to DAC)
     L = length(X);
     idx = (2:floor((L-1)/2)+1)';
     X(idx) = X(idx) .* Hk(idx-1, L, f_gen*mult, Fs);

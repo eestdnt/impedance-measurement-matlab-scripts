@@ -1,7 +1,5 @@
 function nidaq_prbs_measure(specs_filename, output_filename)
 
-    addpath('../utils');
-
     % PRBS specifications
     specs = jsondecode(fileread(specs_filename));
 

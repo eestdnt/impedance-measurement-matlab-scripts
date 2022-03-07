@@ -1,7 +1,5 @@
 function nidaq_sinesweep_measure(specs_filename, output_filename)
 
-    addpath('../utils');
-
     % Read excitation specifications
     specs = jsondecode(fileread(specs_filename));
 

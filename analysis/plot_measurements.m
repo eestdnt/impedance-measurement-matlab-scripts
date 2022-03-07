@@ -25,11 +25,11 @@ function plot_measurements(varargin)
 
     filepaths = strings(0);
     c = 0;
+    % Scan for .mat files in the input filenames and one level down into the directory tree if a provided file is a directory
     for k=1:nargin
         f = varargin{k};
         if isfolder(f)
-            % r = scan_for_mat_files(pwd(), path);
-            ft = split(ls(f));
+            ft = string(ls(f));
             for i=1:length(ft)
                 p = strcat(f, strcat('/', ft{i}));
                 if isfile(p) && contains(p, '.mat')

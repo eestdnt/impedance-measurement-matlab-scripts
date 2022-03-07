@@ -1,7 +1,5 @@
 function nidaq_dibs_measure(specs_filename, output_filename)
 
-    addpath('../utils');
-
     % Design variables
     specs = jsondecode(fileread(specs_filename));
 
@@ -79,10 +77,10 @@ function nidaq_dibs_measure(specs_filename, output_filename)
 
     % Save the raw measurement data
     clear('ai', 'ao', 'dq', 'data');
-    filename = datestr(datetime(), 'yyyy.mm.dd__HH.MM.SS');
-    filename = sprintf('../blob/dibs_%s.mat', filename);
+    % filename = datestr(datetime(), 'yyyy.mm.dd__HH.MM.SS');
+    % filename = sprintf('./blob/dibs_%s.mat', filename);
     disp('Saving to file...');
-    save(filename);
+    % save(filename);
     save(output_filename);
     disp('Finished!');
 end
