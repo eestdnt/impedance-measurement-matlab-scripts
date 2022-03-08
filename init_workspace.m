@@ -3,3 +3,4 @@ addpath('./utils');
 addpath('./measurement');
 addpath('./analysis');
 addpath('./simulation');
+mkdir('./blob');
