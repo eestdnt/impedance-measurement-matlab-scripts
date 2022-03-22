@@ -28,10 +28,10 @@ mult = floor(Fs/f_gen);
 u = reshape(transpose(repmat(excitation, 1, mult)), P_total*N*mult, 1);
 
 % Simulate the excitation signal measurement noise
-sigma = 0.2;
+sigmax = 0.2;
 nx = zeros(size(u));
 for k=1:P
-    nx((k-1)*N*mult+1:k*N*mult) = sigma*randn(N*mult, 1);
+    nx((k-1)*N*mult+1:k*N*mult) = sigmax*randn(N*mult, 1);
 end
 u = u+nx;
 
@@ -42,9 +42,10 @@ tv = transpose(0:1/Fs:(P_total*N*mult-1)/Fs);
 y = lsim(sys, u, tv);
 
 % Simulate the response signal measurement noise
+sigmay = 0.1;
 ny = zeros(size(y));
 for k=1:P
-    ny((k-1)*N*mult+1:k*N*mult) = sigma*randn(N*mult, 1);
+    ny((k-1)*N*mult+1:k*N*mult) = sigmay*randn(N*mult, 1);
 end
 y = y+ny;
 % ----------------------------------------------------------
