@@ -1,191 +1,150 @@
-% function simulate_prbs(specs_filename)
+% This program simulates the frequency-response identification of an LTI system
+% using PRBS with an addition of measurement noise
+clear();
 
-% Read specifications
-specs = jsondecode(fileread(specs_filename));
+% ----------------- Initialization ------------------------
+% Define an LTI system
+f0 = 1000;
+sys = tf([1], [1/(2*pi*f0), 1]);
 
-% Reference model definition
-s = tf("s");
-G_ref = 1 / (1 + 5.852e-4 * s);
+% PRBS generation
+A = 1;
+f_gen = 3000;
+f_min = 10;
+[excitation, N, f_min] = generate_mlbs(A, f_gen, f_min);
 
-switch specs.type
-    case "dibs"
-        [u, params] = generate_dibs(jsondecode(fileread(specs_filename)));
-    otherwise
-        [u, params] = generate_prbs(jsondecode(fileread(specs_filename)));
-end
+P_extra = 1; % Extra periods for transient
+P = 10; % Injection periods (included in Fourier analysis)
+P_total = P_extra + P;
+excitation = repmat(excitation, P_total, 1);
+% ----------------------------------------------------------
 
-A = params.seq_amplitude;
-N = params.seq_length;
-f_bw = params.bandwidth;
-f_gen = params.generation_freq;
-Fs = params.sampling_freq;
-n = params.seq_order;
-P = 10;
-P_extra = 1;
+% ----------------- Simulate the injection -----------------
+% Specify sampling frequency
+Fs = 4*f_gen;
+
+% Generate the excitation signal at the same rate as the sampling rate
 mult = floor(Fs/f_gen);
+u = reshape(transpose(repmat(excitation, 1, mult)), P_total*N*mult, 1);
 
-% Print excitation parameters
-fprintf("Excitation specifications:\n");
-fprintf(" - Design variables:\n");
-fprintf("   + Amplitude: A = %.4f\n", A);
-fprintf("   + Measurement bandwidth: f_bw = %d Hz\n", f_bw);
-fprintf("   + Sampling frequency: Fs = %d Hz\n", Fs);
-fprintf(" - Specification variables:\n");
-fprintf("   + Shift-register length: n = %d\n", n);
-fprintf("   + Sequence length: N = %d\n", N);
-fprintf("   + Generation frequency: f_gen = %d Hz\n", f_gen);
-fprintf("   + Frequency resolution: %.4f Hz\n", f_gen/N);
-fprintf("   + Number of applied periods: P = %d\n", P);
-fprintf("   + Number of estimated transient periods: P_extra = %d\n", P_extra);
-
-if specs.type == "dibs"
-    fprintf(" - Frequency content:\n");
-    freq_specs = params.freq_content;
-    for k = 1:length(freq_specs)
-        f_min = freq_specs(k).f_min;
-        f_max = freq_specs(k).f_max;
-        power = A^2 * N^2 * freq_specs(k).power_ratio;
-        count = freq_specs(k).count;
-
-        fprintf("   + f_start: %.2f Hz, f_end: %2.f Hz, count: %d, power: %.2f dB\n", f_min, f_max, count, db(power));
-    end
+% Simulate the excitation signal measurement noise
+sigma = 0.2;
+nx = zeros(size(u));
+for k=1:P
+    nx((k-1)*N*mult+1:k*N*mult) = sigma*randn(N*mult, 1);
 end
+u = u+nx;
 
-% Noise level
-noise_power = 1e-5;
+% Generate time vector
+tv = transpose(0:1/Fs:(P_total*N*mult-1)/Fs);
 
-% Excitation variables
-excitation_time_vec = (0:1/f_gen:((P+P_extra)*N - 1)/f_gen)';
-excitation_vec = repmat(u, P+P_extra, 1);
-inp_noise_vec = wgn(length(excitation_vec), 1, noise_power);
-out_noise_vec = wgn(length(excitation_vec), 1, noise_power);
-if noise_enabled == false
-    inp_noise_vec = zeros(size(inp_noise_vec));
-    out_noise_vec = zeros(size(out_noise_vec));
+% Simulate the injection
+y = lsim(sys, u, tv);
+
+% Simulate the response signal measurement noise
+ny = zeros(size(y));
+for k=1:P
+    ny((k-1)*N*mult+1:k*N*mult) = sigma*randn(N*mult, 1);
 end
-sim_duration = (P+P_extra)*N/f_gen;
+y = y+ny;
+% ----------------------------------------------------------
 
-% Simulate
-options = simset('SrcWorkspace','current');
-sim_out = sim("noise_simulator.slx", [], options);
-
-% Meaurement result analysis
-
-% Format the result
-x = inp_vec(1:end-1);
-y = out_vec(1:end-1);
-
+% ----------------- Analyze the result ---------------------
 % Skip the transients
-x = x(P_extra*mult*N+1:end);
-y = y(P_extra*mult*N+1:end);
+u = u(P_extra*N*mult+1:end);
+y = y(P_extra*N*mult+1:end);
+tv = transpose(1/Fs:1/Fs:N*mult/Fs);
 
-% Average DFT
-Nx = zeros(mult*N,P);
-for i=1:P
-    X = fft(x((i-1)*mult*N+1:i*mult*N));
-    Nx(:,i) = abs(X)/abs(X(2));
+[Xs, ~, x_mean, x_var] = dfts_over_periods(u, P, Fs);
+[Ys, ~, y_mean, y_var] = dfts_over_periods(y, P, Fs);
+[G, fv, U, Y, u, y] = estimate_frf_from_broadband_measurement(u, y, P, Fs);
+
+% Compute target frequency-response over multiple periods
+L = length(G);
+Gs = zeros(L, P);
+for k=1:P
+    Gs(:,k) = Ys(:,k) ./ Xs(:,k);
 end
-% fprintf("Noise variance: %.2f\n", var(inp_noise_vec));
 
-% Average
-x = mean(reshape(x,mult*N,P),2);
-y = mean(reshape(y,mult*N,P),2);
-
-% Noise variances
-var_x = zeros(mult*N,1);
-for i=1:mult*N
-    var_x(i) = var(Nx(i,:));
+% Calculate amplitude and phase variances
+X_mag_var = zeros(size(x_var));
+Y_mag_var = zeros(size(y_var));
+G_mag_var = zeros(size(x_var));
+G_phase_var = zeros(size(x_var));
+for i=1:length(X_mag_var)
+    X_mag_var(i) = var(abs(Xs(i,:)));
+    Y_mag_var(i) = var(abs(Ys(i,:)));
+    G_mag_var(i) = var(abs(Gs(i,:)));
+    G_phase_var(i) = var(unwrap(angle(Gs(i,:))));
 end
-figure(5), clf();
-stem(var_x);
-title("Input noise variance");
-grid("on");
+fprintf("Excitation variance: %.2f\n", mean(x_var));
+fprintf("Response variance: %.2f\n", mean(y_var));
+fprintf("Estimation deviation: %.2f\n", mean(sqrt(G_mag_var(find(~isnan(G_mag_var))))));
+fprintf("Estimation phase deviation: %.2f rads\n", mean(sqrt(G_phase_var(find(~isnan(G_phase_var))))));
+% fprintf("Estimation variance: %.2f\n", G_mag_var(3));
+% fprintf("DFT variance: %.4f\n", var(abs(Xs(2,:)).^2/N));
 
-% Noise signals
-figure(6), clf();
-semilogx(Nx(:,1));
-title("Input noise PSD");
-grid("on");
+% % Average the signals over the injection periods
+% u = mean(reshape(u, mult*N, P), 2);
+% y = mean(reshape(y, mult*N, P), 2);
 
 % Plot the signals
-figure(1), clf();
-tv = (1/Fs:1/Fs:1/Fs*length(x))';
-subplot(2,1,1);
-stairs(tv,x), grid on, ylabel("Voltage (V)"), title("Input voltage (V)");
-ylim([-6, 6]);
-subplot(2,1,2);
-plot(tv,y), grid on, ylabel("Voltage (V)"), title("Output voltage (V)");
-xlabel("Time (s)");
-
-% DFT analysis
-
-% DFT
-X = fft(x);
-Y = fft(y);
-freq_step = Fs/length(X);
-fv = (0:freq_step:freq_step*(length(X)-1))';
-
-% Phase compensation
-Hw = @(w,w0) (1 - exp(-1j*w*2*pi/w0)) ./ (1j*w*2*pi/w0);
-Hk = @(k,N,Fz,Fs) Hw(k/N*2*pi*Fs,2*pi*Fz);
-% Hk = @(k) (1 - exp(-1j*k*2*pi/N)) ./ (1j*k*2*pi/N);
-L = length(X);
-idx = (2:floor((L-1)/2)+1)';
-X(idx) = X(idx) .* Hk(idx-1,L,f_gen*mult,Fs);
-X(L-idx+2) = conj(X(idx));
-
-% MLBS power spectrum
 figure(2), clf();
-subplot(2,1,1);
-semilogx(fv, db(abs(X)), "LineStyle", "none", "Marker", "o");
-% xlim([freq_step, f_bw]);
-% ylim([0, 1.5*max(db(X_abs(2:end)))]);
+subplot(2, 1, 1);
+stairs(tv, u);
 grid("on");
-subplot(2,1,2);
-semilogx(fv, 180/pi*angle(X), "LineStyle", "none", "Marker", "o");
+ylabel("Excitation");
+subplot(2, 1, 2);
+stairs(tv, y);
 grid("on");
-title("Excitation power spectrum");
+ylabel("Response");
+xlabel("Time (s)");
+sgtitle("Averaged signals");
 
-% Output signal power spectrum
-figure(4), clf();
-subplot(2,1,1);
-semilogx(fv, db(abs(Y)), "LineStyle", "none", "Marker", "o");
-% xlim([freq_step, f_bw]);
-grid("on");
-subplot(2,1,2);
-semilogx(fv, 180/pi*angle(Y), "LineStyle", "none", "Marker", "o");
-grid("on");
-title("Output power spectrum");
+idx = 2:N*mult/2;
+f_bw = 2000;
 
-% Reference model
-[mag, phase, ~] = bode(G_ref, 2*pi*fv);
-mag = reshape(mag, numel(mag), 1);
-phase = reshape(phase, numel(phase), 1);
-
-% Reference bode plot
+% Plot the amplitude spectra
 figure(3), clf();
-subplot(2,1,1);
-semilogx(fv, db(mag), "LineStyle", "-");
-xlim([freq_step, f_bw]), ylabel("Power (db)"), grid("on");
-subplot(2,1,2);
-semilogx(fv, phase, "LineStyle", "-");
-xlim([freq_step, f_bw]), xlabel("Frequency (Hz)"), ylabel("Phase (deg)"), grid on;
-sgtitle("Bode plot");
+subplot(2, 1, 1);
+% hold("on");
+errorbar(fv(idx), abs(U(idx)), sqrt(X_mag_var(idx)), "LineStyle", "none", "Marker", ".", "MarkerFaceColor", "blue", "Color", "blue");
+% hold("off");
+xlim([f_min, f_bw]);
+grid("on");
+ylabel("Amplitude");
+subplot(2, 1, 2);
+errorbar(fv(idx), abs(Y(idx)), sqrt(Y_mag_var(idx)), "LineStyle", "none", "Marker", ".", "MarkerFaceColor", "blue", "Color", "blue");
+xlim([f_min, f_bw]);
+grid("on");
+ylabel("Amplitude");
+xlabel("Frequency (Hz)");
+sgtitle("Amplitude spectra");
 
-% Estimation bode plot
-G = Y./X;
-if params.type == "dibs"
-    idx = params.indicies;
-    fv = fv(idx);
-    G = G(idx);
-end
-figure(3);
-subplot(2,1,1);
+% Plot the frequency-response of target system
+[mag_ref, phase_ref, wv_ref] = bode(sys, 2*pi*fv);
+fv_ref = reshape(wv_ref, numel(wv_ref), 1)/(2*pi);
+mag_ref = reshape(mag_ref, numel(mag_ref), 1);
+phase_ref = reshape(phase_ref, numel(phase_ref), 1);
+
+figure(1), clf();
+subplot(2, 1, 1);
+semilogx(fv_ref, mag_ref, "LineStyle", "-", "Color", "r");
 hold("on");
-plot(fv, db(abs(G)), "LineStyle", "none", "Marker", ".");
+errorbar(fv(idx), abs(G(idx)), sqrt(G_mag_var(idx)), "LineStyle", "none", "Marker", ".", "MarkerFaceColor", "blue", "Color", "blue");
 hold("off");
-legend(["Measured", "Reference"]);
-subplot(2,1,2);
+grid("on");
+xlim([f_min, f_bw]);
+ylabel("Amplitude");
+subplot(2, 1, 2);
+semilogx(fv_ref, phase_ref, "LineStyle", "-", "Color", "r");
 hold("on");
-plot(fv, 180/pi*angle(G), "LineStyle", "none", "Marker", ".");
+errorbar(fv(idx), 180/pi*unwrap(angle(G(idx))), sqrt(G_phase_var(idx)), "LineStyle", "none", "Marker", ".", "MarkerFaceColor", "blue", "Color", "blue");
 hold("off");
+grid("on");
+xlim([f_min, f_bw]);
+ylabel("Phase (degrees)");
+xlabel("Frequency (Hz)");
+legend(["Reference", "Estimation"]);
+sgtitle("System");
+% ----------------------------------------------------------
