@@ -1,12 +1,15 @@
-function [u, params] = generate_prbs(specs)
+function [u, params] = generate_mlbs(specs)
+% GENERATE_PRBS Generate an MLBS based on the specifications
+%   u = generate_mlbs(specs) generates an MLBS sequence.
+%   [u, params] = generate_mlbs(specs) generates an MLBS sequence and its design variables
 
-    % PRBS design variables
+    % Specified variables
     A = specs.amplitude;
     f_bw = specs.bandwidth;
     f_resolution = specs.resolution;
-    sampling_freq = specs.sampling_freq;
+    sampling_freq = specs.max_sampling_freq;
 
-    % PRBS specification variables
+    % Generated variables
     f_gen = 3*f_bw;
     n = ceil(log2(f_gen/f_resolution + 1));
     N = 2^n - 1;

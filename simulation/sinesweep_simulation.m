@@ -1,7 +1,5 @@
 function simulate_sinesweep(specs_filename);
 
-    addpath('../utils');
-
     % Simulation settings
     noise_enabled = 1;
 

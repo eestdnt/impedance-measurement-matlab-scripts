@@ -11,7 +11,7 @@ function nidaq_dibs_measure(specs_filename, output_filename)
     f_gen = params.generation_freq;
     Fs = params.sampling_freq;
     n = floor(log2(N+1));
-    P = 5;
+    P = 10;
     P_extra = 3;
     mult = floor(Fs/f_gen);
 
@@ -67,7 +67,7 @@ function nidaq_dibs_measure(specs_filename, output_filename)
     ao(1).Range = [-5 5]; % PRBS voltage perturbation by linear amplifier
     
     % Start the acquisition
-    disp('Measurement starting...');
+    disp('Measurement started!');
     [data, ~, ~] = readwrite(dq, excitation_vec, 'OutputFormat', 'Matrix');
     disp('Measurement stopped!');
     

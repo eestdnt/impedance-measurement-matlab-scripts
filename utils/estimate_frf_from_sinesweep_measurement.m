@@ -17,6 +17,9 @@ function [frf, freq_vec, sampling_freq, signals, dfts, excitation_params] = esti
     X_vec = zeros(length(f_vec), 1);
     Y_vec = zeros(length(f_vec), 1);
 
+    inp_vec = measured_excitation_signal;
+    out_vec = measured_response_signal;
+
     x_averaged = zeros(length(inp_vec)/(P+P_extra), 1);
     y_averaged = zeros(length(out_vec)/(P+P_extra), 1);
 

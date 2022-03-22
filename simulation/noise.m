@@ -1,6 +1,5 @@
 %% Frequency-domain measurement noise signal demonstration
 %
-% Clear workspace
 clear();
 
 N = 2^6-1; % PRBS sequence length
