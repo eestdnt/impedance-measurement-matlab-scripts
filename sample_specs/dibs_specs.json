@@ -1,8 +1,9 @@
 {
     "type": "dibs",
     "amplitude": 0.1,
-    "bandwidth": 10000,
-    "prbs_resolution": 1,
+    "bandwidth": 2000,
+    "generation_frequency": 6000,
+    "sequence_frequency": 1,
     "sampling_freq": 500000,
     "content": [
         {
@@ -12,5 +13,8 @@
             "scale": "log",
             "count": 20
         }
-    ]
+    ],
+    "num_idle_periods": 1,
+    "num_extra_periods": 5,
+    "num_periods": 3
 }

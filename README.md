@@ -4,7 +4,11 @@ This repository contains MATLAB scripts for measuring the internal impedance of 
 
 ## Prerequisites
 
-- MATLAB R2021b
+- MATLAB packages:
+  - MATLAB
+  - Simulink
+  - Data Acquisition Toolbox
+  - Signal Processing Toolbox
 
 ## Usage
 
@@ -25,11 +29,19 @@ init_workspace
 ### Measure impedance with PRBS
 
 ```
-nidaq_prbs_measure('./sample_specs/prbs_specs.json', './blob/prbs_measurement_data.mat')
+run_broadband_measurement_from_file('./sample_specs/prbs_specs.json', './blob/prbs_measurement_data.mat', @plot_prbs_measurement)
 ```
 
 ### Calculate internal impedance and plot the impedance spectra
 
 ```
-plot_prbs_measurement('./blob/prbs_measurement_data.mat')
+run_with_data("./blob/prbs_measurement_data.mat", @plot_prbs_measurement)
+```
+
+### Get help with the scripts
+
+```
+help run_broadband_measurement_from_file
+help run_with_data
+help plot_prbs_measurement
 ```

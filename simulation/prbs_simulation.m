@@ -42,10 +42,6 @@ tv = transpose(1/Fs:1/Fs:N*mult/Fs);
 
 [G, fv, U, Y, u, y] = estimate_frf_from_broadband_measurement(u, y, P, Fs);
 
-% % Average the signals over the injection periods
-% u = mean(reshape(u, mult*N, P), 2);
-% y = mean(reshape(y, mult*N, P), 2);
-
 % Plot the signals
 figure(2), clf();
 subplot(2, 1, 1);
