@@ -90,7 +90,7 @@ fprintf("Estimation phase deviation: %.2f rads\n", mean(sqrt(G_phase_var(find(~i
 % y = mean(reshape(y, mult*N, P), 2);
 
 % Plot the signals
-figure(2), clf();
+figure(1), clf();
 subplot(2, 1, 1);
 stairs(tv, u);
 grid("on");
@@ -106,7 +106,7 @@ idx = 2:N*mult/2;
 f_bw = 2000;
 
 % Plot the amplitude spectra
-figure(3), clf();
+figure(2), clf();
 subplot(2, 1, 1);
 % hold("on");
 errorbar(fv(idx), abs(U(idx)), sqrt(X_mag_var(idx)), "LineStyle", "none", "Marker", ".", "MarkerFaceColor", "blue", "Color", "blue");
@@ -128,7 +128,7 @@ fv_ref = reshape(wv_ref, numel(wv_ref), 1)/(2*pi);
 mag_ref = reshape(mag_ref, numel(mag_ref), 1);
 phase_ref = reshape(phase_ref, numel(phase_ref), 1);
 
-figure(1), clf();
+figure(3), clf();
 subplot(2, 1, 1);
 semilogx(fv_ref, mag_ref, "LineStyle", "-", "Color", "r");
 hold("on");

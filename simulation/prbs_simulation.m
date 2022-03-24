@@ -43,7 +43,7 @@ tv = transpose(1/Fs:1/Fs:N*mult/Fs);
 [G, fv, U, Y, u, y] = estimate_frf_from_broadband_measurement(u, y, P, Fs);
 
 % Plot the signals
-figure(2), clf();
+figure(1), clf();
 subplot(2, 1, 1);
 stairs(tv, u);
 ylim([-1.5, 1.5]);
@@ -61,14 +61,14 @@ idx = 2:N*mult/2;
 f_bw = 2000;
 
 % Plot the amplitude spectra
-figure(3), clf();
+figure(2), clf();
 subplot(2, 1, 1);
 semilogx(fv(idx), db(abs(U(idx))), "LineStyle", "none", "Marker", "o");
 xlim([f_min, f_bw]);
 grid("on");
 ylabel("Amplitude (dB)");
 subplot(2, 1, 2);
-semilogx(fv(idx), abs(Y(idx)), "LineStyle", "none", "Marker", "o");
+semilogx(fv(idx), db(abs(Y(idx))), "LineStyle", "none", "Marker", "o");
 xlim([f_min, f_bw]);
 grid("on");
 ylabel("Amplitude (dB)");
@@ -81,7 +81,7 @@ fv_ref = reshape(wv_ref, numel(wv_ref), 1)/(2*pi);
 mag_ref = reshape(mag_ref, numel(mag_ref), 1);
 phase_ref = reshape(phase_ref, numel(phase_ref), 1);
 
-figure(1), clf();
+figure(3), clf();
 subplot(2, 1, 1);
 semilogx(fv_ref, db(mag_ref), "LineStyle", "-", "Color", "r");
 hold("on");
@@ -99,6 +99,6 @@ grid("on");
 xlim([f_min, f_bw]);
 ylabel("Phase (degrees)");
 xlabel("Frequency (Hz)");
-legend(["Reference", "Estimation"]);
+legend(["Reference", "Estimation"], "Location", "best");
 sgtitle("System");
 % --------------------------------------------------------------------

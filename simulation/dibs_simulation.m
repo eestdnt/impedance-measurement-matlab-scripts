@@ -8,10 +8,10 @@ f0 = 1000;
 sys = tf([1], [1/(2*pi*f0), 1]);
 
 % DIBS generation
-f_bw = 2000;
-A = 1;
-f_gen = 3000;
-f_min = 10;
+f_bw = 2000; % Measurement bandwidth
+A = 1; % Excitation amplitude
+f_gen = 3000; % Generation frequency
+f_min = 10; % Maximum sequence frequency
 freq_specs = [freq_segment_class()];
 freq_specs(1).f_min = 0;
 freq_specs(1).f_max = 2000;
@@ -55,7 +55,7 @@ U = U(idx);
 Y = Y(idx);
 
 % Plot the signals
-figure(2), clf();
+figure(1), clf();
 subplot(2, 1, 1);
 stairs(tv, u);
 ylim([-1.5, 1.5]);
@@ -72,18 +72,18 @@ sgtitle("Averaged signals");
 idx = transpose(1:length(G)/2);
 
 % Plot the amplitude spectra
-figure(3), clf();
+figure(2), clf();
 subplot(2, 1, 1);
 semilogx(fv(idx), db(abs(U(idx))), "LineStyle", "none", "Marker", "o");
 xlim([fv(1), f_bw]);
 grid("on");
-ylabel("Excitation (dB)");
+ylabel("Amplitude (dB)");
 subplot(2, 1, 2);
-semilogx(fv(idx), abs(Y(idx)), "LineStyle", "none", "Marker", "o");
+semilogx(fv(idx), db(abs(Y(idx))), "LineStyle", "none", "Marker", "o");
 xlim([fv(1), f_bw]);
 grid("on");
-ylabel("Response (dB)");
-xlabel("Frequency (rads)");
+ylabel("Amplitude (dB)");
+xlabel("Frequency (Hz)");
 sgtitle("Amplitude spectra");
 
 % Plot the frequency-response of target system
@@ -92,7 +92,7 @@ fv_ref = reshape(wv_ref, numel(wv_ref), 1)/(2*pi);
 mag_ref = reshape(mag_ref, numel(mag_ref), 1);
 phase_ref = reshape(phase_ref, numel(phase_ref), 1);
 
-figure(1), clf();
+figure(3), clf();
 subplot(2, 1, 1);
 semilogx(fv_ref, db(mag_ref), "LineStyle", "-", "Color", "r");
 hold("on");
@@ -109,7 +109,7 @@ hold("off");
 grid("on");
 xlim([fv(2), f_bw]);
 ylabel("Phase (degrees)");
-xlabel("Frequency (rads)");
-legend(["Reference", "Estimation"]);
+xlabel("Frequency (Hz)");
+legend(["Reference", "Estimation"], "Location", "best");
 sgtitle("System");
 % --------------------------------------------------------------------
