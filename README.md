@@ -1,4 +1,4 @@
-# Impedance frequency-response measurement
+# Frequency-response measurement and analysis cripts
 
 This repository contains MATLAB scripts for measuring the internal impedance of power-electronic converters and batteries.
 
