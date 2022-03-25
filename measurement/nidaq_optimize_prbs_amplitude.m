@@ -12,17 +12,12 @@
 %   P: Number of injection periods
 
 % Find an optimal amplitude
-% A = 1;
-
-sd_max_relative = 0.1;
-
 amplitude_arr = [];
 
 amp_low = 0.1;
 amp_high = 2;
 amp_best = amp_high;
 amp_prev = amp_low;
-epsilon = 0.0005;
 
 while abs(amp_best-amp_prev) > epsilon
 
@@ -35,7 +30,7 @@ while abs(amp_best-amp_prev) > epsilon
 
     % Execute script
     disp("Experiment script starts now...");
-    nidaq_prbs_measure();
+    nidaq_prbs_impedance_measurement();
     disp("Experiment completed!");
 
     % ----------------- Analyze the result ---------------------
@@ -65,7 +60,7 @@ while abs(amp_best-amp_prev) > epsilon
 
     % ---------------- Plotting --------------------------------
     % Plot the signals
-    figure(2), clf();
+    figure(1), clf();
     subplot(2, 1, 1);
     stairs(tv, x);
     grid("on");
@@ -79,7 +74,7 @@ while abs(amp_best-amp_prev) > epsilon
 
     % Plot the amplitude spectra
     idx = 2:N*mult/2;
-    figure(3), clf();
+    figure(2), clf();
     subplot(2, 1, 1);
     semilogx(fv(idx), abs(U(idx)), "LineStyle", "none", "Marker", "o", "Color", "blue");
     xlim([f_min, f_bw]);
@@ -94,7 +89,7 @@ while abs(amp_best-amp_prev) > epsilon
     sgtitle("Amplitude spectra");
 
     % Plot the frequency-response of target system
-    figure(1), clf();
+    figure(3), clf();
     subplot(2, 1, 1);
     errorbar(fv(idx), abs(G(idx)), sqrt(G_mag_var(idx)), "LineStyle", "none", "Marker", ".", "Color", "blue");
     hold("on");
