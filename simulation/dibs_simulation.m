@@ -13,7 +13,6 @@ f_gen = 6000; % Generation frequency
 f1_max = 10; % Maximum sequence fundamental frequency
 
 % Design the frequency content
-num_freqs = 10;
 freqs = transpose(floor(logspace(1, log10(f_bw), 20)));
 psd_arr = [freqs, ones(20,1)/20-0.001];
 
@@ -47,8 +46,10 @@ u = u(P_extra*N*mult+1:end);
 y = y(P_extra*N*mult+1:end);
 tv = transpose(1/Fs:1/Fs:N*mult/Fs);
 
+% Estimation
 [G, fv, U, Y, u, y] = estimate_frf_from_broadband_measurement(u, y, P, Fs);
 
+% Select only the specified frequency indices
 fv = fv(idx);
 G = G(idx);
 U = U(idx);

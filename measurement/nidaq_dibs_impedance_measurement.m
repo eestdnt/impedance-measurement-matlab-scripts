@@ -2,13 +2,13 @@
 %   The following variables are assumed to reside in the MATLAB workspace:
 %       A: Excitation amplitude
 %       f_bw: Measurement bandwidth
-%       f_gen: PRBS generation frequency
-%       f_min: PRBS frequency
+%       f_gen: DIBS generation frequency
+%       f1_max: Maximum DIBS frequency
 %       Fs: Sampling frequency
 %       P_idle: Number of initial injection periods that generates a zero signal
 %       P_extra: Number of extra injection periods to cover the transients
 %       P: Number of injection periods
-%       freq_content: User-defined frequency content, see definition for freq_segment_class.
+%       psd_arr: User-defined frequency content, see help for generate_dibs().
 %   The measurement is done with NiDAQ instrument and uses the following channel configuration:
 %       + AI1: Measurement of excitation signal (current measurement, 10V/A amplification)
 %       + AI2: Measurement of response signal (voltage measurement)
@@ -21,7 +21,7 @@ if mod(int64(Fs), int64(f_gen)) > 0
 end
 
 % DIBS generation
-[u, N, f_min] = generate_dibs(A, f_gen, f_min, freq_content);
+[u, N, f1, idx] = generate_dibs(A, f_gen, f1_max, psd_arr);
 mult = floor(Fs/f_gen);
 P_total = P_idle+P_extra+P;
 n = log2(N+1);
@@ -57,12 +57,12 @@ dq = daq("ni");
 dq.Rate = Fs;
 
 % Setup input channels
-ai = addinput(dq, device_name, 1:2, "Voltage");
+ai = addinput(dq, device_name, [1, 2], "Voltage");
 ai(1).Range = [-1 1]; % Output current
 ai(2).Range = [-5 5]; % Output voltage
 
 % Setup output channels
-ao = addoutput(dq, device_name, 0:0, "Voltage");
+ao = addoutput(dq, device_name, [0], "Voltage");
 ao(1).Range = [-5 5]; % PRBS voltage perturbation by linear amplifier
 
 % Start the acquisition

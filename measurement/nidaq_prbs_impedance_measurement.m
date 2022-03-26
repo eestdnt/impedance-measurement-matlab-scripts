@@ -3,7 +3,7 @@
 %       A: Excitation amplitude
 %       f_bw: Measurement bandwidth
 %       f_gen: PRBS generation frequency
-%       f_min: PRBS frequency
+%       f1_max: Maximum PRBS frequency
 %       Fs: Sampling frequency
 %       P_idle: Number of initial injection periods that generates a zero signal
 %       P_extra: Number of extra injection periods to cover the transients
@@ -20,7 +20,7 @@ if mod(int64(Fs), int64(f_gen)) > 0
 end
 
 % PRBS generation
-[u, N, f_min] = generate_mlbs(A, f_gen, f_min);
+[u, N, f1] = generate_mlbs(A, f_gen, f1_max);
 mult = floor(Fs/f_gen);
 P_total = P_idle+P_extra+P;
 n = log2(N+1);
@@ -56,12 +56,12 @@ dq = daq("ni");
 dq.Rate = Fs;
 
 % Setup input channels
-ai = addinput(dq, device_name, 1:2, "Voltage");
-ai(1).Range = [-1 1]; % Output current
-ai(2).Range = [-5 5]; % Output voltage
+ai = addinput(dq, device_name, [1, 2], "Voltage");
+ai(1).Range = [-1 1]; % Measured current
+ai(2).Range = [-5 5]; % Measured voltage
 
 % Setup output channels
-ao = addoutput(dq, device_name, 0:0, "Voltage");
+ao = addoutput(dq, device_name, [0], "Voltage");
 ao(1).Range = [-5 5]; % PRBS voltage perturbation by linear amplifier
 
 % Start the acquisition

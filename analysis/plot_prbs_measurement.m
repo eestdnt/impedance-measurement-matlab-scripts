@@ -35,17 +35,17 @@
 
     if excitation_type == "dibs"
         fprintf(" - Frequency content:\n");
-        for k = 1:length(freq_specs)
-            f_min = freq_specs(k).f_min;
-            f_max = freq_specs(k).f_max;
-            power = A^2 * N^2 * freq_specs(k).power_ratio;
-            count = freq_specs(k).count;
-            fprintf("   + f_start: %.2f Hz, f_end: %2.f Hz, count: %d, power: %.2f dB\n", f_min, f_max, count, db(power));
-        end
-        fv = fv(dibs_idx);
-        Z = Z(dibs_idx);
-        X = X(dibs_idx);
-        Y = Y(dibs_idx);
+        % for k = 1:length(freq_specs)
+        %     f_min = freq_specs(k).f_min;
+        %     f_max = freq_specs(k).f_max;
+        %     power = A^2 * N^2 * freq_specs(k).power_ratio;
+        %     count = freq_specs(k).count;
+        %     fprintf("   + f_start: %.2f Hz, f_end: %2.f Hz, count: %d, power: %.2f dB\n", f_min, f_max, count, db(power));
+        % end
+        fv = fv(idx);
+        Z = Z(idx);
+        X = X(idx);
+        Y = Y(idx);
     end
 
     % Raw data plot
