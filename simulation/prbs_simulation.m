@@ -10,8 +10,8 @@ sys = tf([1], [1/(2*pi*f0), 1]);
 % PRBS generation
 A = 1;
 f_gen = 3000;
-f_min = 10;
-[excitation, N, f_min] = generate_mlbs(A, f_gen, f_min);
+f1_max = 10;
+[excitation, N, f1] = generate_mlbs(A, f_gen, f1_max);
 
 P_extra = 1; % Extra periods for transient
 P = 2; % Injection periods (included in Fourier analysis)
@@ -64,12 +64,12 @@ f_bw = 2000;
 figure(2), clf();
 subplot(2, 1, 1);
 semilogx(fv(idx), db(abs(U(idx))), "LineStyle", "none", "Marker", "o");
-xlim([f_min, f_bw]);
+xlim([f1, f_bw]);
 grid("on");
 ylabel("Amplitude (dB)");
 subplot(2, 1, 2);
 semilogx(fv(idx), db(abs(Y(idx))), "LineStyle", "none", "Marker", "o");
-xlim([f_min, f_bw]);
+xlim([f1, f_bw]);
 grid("on");
 ylabel("Amplitude (dB)");
 xlabel("Frequency (Hz)");
@@ -88,7 +88,7 @@ hold("on");
 semilogx(fv(idx), db(abs(G(idx))), "LineStyle", "none", "Marker", "o", "Color", "b");
 hold("off");
 grid("on");
-xlim([f_min, f_bw]);
+xlim([f1, f_bw]);
 ylabel("Amplitude (dB)");
 subplot(2, 1, 2);
 semilogx(fv_ref, phase_ref, "LineStyle", "-", "Color", "r");
@@ -96,7 +96,7 @@ hold("on");
 semilogx(fv(idx), 180/pi*unwrap(angle(G(idx))), "LineStyle", "none", "Marker", "o", "Color", "b");
 hold("off");
 grid("on");
-xlim([f_min, f_bw]);
+xlim([f1, f_bw]);
 ylabel("Phase (degrees)");
 xlabel("Frequency (Hz)");
 legend(["Reference", "Estimation"], "Location", "best");

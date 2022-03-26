@@ -17,7 +17,7 @@ function run_experiment(operations, data_filepath)
         % fprintf("-----------------------------------------\n");
     end
 
-    % Save the measurement data to file
+    % Save the workspace to file
     fprintf("---------------- Step #%d ---------------\n", length(operations)+1);
     fprintf("Saving data to file %s...\n", data_filepath);
     clear("operations");

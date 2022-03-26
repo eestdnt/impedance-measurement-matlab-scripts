@@ -1,54 +1,73 @@
-function [u, N, f_min, idx] = generate_dibs(A, f_gen, f_min, freq_segments)
+function [u, N, f1, idx] = generate_dibs(A, f_gen, f1_max, psd_arr)
 % GENERATE_DIBS Generate a DIBS based on the specifications.                                      
-%   [u, params] = generate_dibs(A, f_bw, f_min, f_sampling_max) generates a DIBS sequence with    
-%   amplitude A, generation frequency f_gen Hz and frequency resolution at least f_min Hz and also     returns the design parameters.
+%   [u, N, f1, idx] = generate_dibs(A, f_gen, f1_max, psd_arr) generates a DIBS sequence with    
+%   amplitude <A>, generation frequency <f_gen> Hz, signal frequency at most <f1_max> Hz, and with frequency content specified by <psd_arr>. <psd_arr> is a matrix with two columns: 1st column contains the specified frequencies and 2nd column contains the corresponding power as a ratio of the total sequence power. If any of the specified frequencies do not match the computed frequency grid, the closest frequency in the grid is selected instead.
 
     arguments
         A double
         f_gen double
-        f_min double
-        freq_segments (:,1) freq_segment_class
+        f1_max double
+        psd_arr (:,2) double
     end
 
     % Design DIBS based on an MLBS
-    n = ceil(log2(f_gen/f_min + 1));
+    n = ceil(log2(f_gen/f1_max + 1));
     N = 2^n - 1;
-    f_min = f_gen/N;
-    mlbs = A*idinput(N, "prbs");
-    D = fft(mlbs);
+    f1 = f_gen/N;
+    D = zeros(N, 1);
 
     mid_idx = floor((N-1)/2);
     kv = transpose(0:mid_idx);
-    D(1) = 0;
-    D(kv+1) = 0;
     specified_indices = [];
 
-    for k = 1:length(freq_segments)
-        f_min = freq_segments(k).f_min;
-        f_max = freq_segments(k).f_max;
-        power = A^2 * N^2 * freq_segments(k).power_ratio;
-        count = freq_segments(k).count;
-
-        selected_idx = kv((kv*f_gen/N > f_min) & (kv*f_gen/N <= f_max))+1;
-
-        if freq_segments(k).scale == "log"
-            specified_idx = transpose(floor(logspace(log10(selected_idx(1)), log10(selected_idx(end)), count)));
-        else
-            specified_idx = transpose(floor(linspace(selected_idx(1), selected_idx(end), count))); % Linear scale
-        end
-        specified_idx = unique(specified_idx);
-        specified_indices = [specified_indices; specified_idx];
-
-        D(selected_idx) = 0;
-        D(specified_idx) = sqrt(power);
+    if sum(psd_arr(:,2)) > 1
+        disp("Total specified energy is greater than the total sequence energy, aborting!");
+        return;
     end
+
+    for i=1:size(psd_arr, 1)
+        f = psd_arr(i,1);
+        p = psd_arr(i,2) * A^2 * N^2;
+        k_best = 0;
+        idx = 1;
+        for j=1:length(kv)
+            k = kv(j);
+            if abs(k*f_gen/N - f) < abs(k_best*f_gen/N - f)
+                k_best = k;
+                idx = j;
+            end
+        end
+        D(idx) = sqrt(p);
+        specified_indices = [specified_indices; idx];
+    end
+    specified_indices = unique(specified_indices);
+
+    % for k = 1:length(freq_segments)
+    %     f_min = freq_segments(k).f_min;
+    %     f_max = freq_segments(k).f_max;
+    %     power = A^2 * N^2 * freq_segments(k).power_ratio;
+    %     count = freq_segments(k).count;
+
+    %     selected_idx = kv((kv*f_gen/N > f_min) & (kv*f_gen/N <= f_max))+1;
+
+    %     if freq_segments(k).scale == "log"
+    %         specified_idx = transpose(floor(logspace(log10(selected_idx(1)), log10(selected_idx(end)), count)));
+    %     else
+    %         specified_idx = transpose(floor(linspace(selected_idx(1), selected_idx(end), count))); % Linear scale
+    %     end
+    %     specified_idx = unique(specified_idx);
+    %     specified_indices = [specified_indices; specified_idx];
+
+    %     D(selected_idx) = 0;
+    %     D(specified_idx) = sqrt(power);
+    % end
 
     % Mirror the DFT sequence values
     idx = transpose(2:floor((N-1)/2)+1);
     D(N-idx+2) = conj(D(idx));
 
     % VAN DEN BOS algorithm
-    % disp("Optimization started");
+    disp("Optimization started");
 
     d = real(ifft(D));
 
@@ -87,11 +106,8 @@ function [u, N, f_min, idx] = generate_dibs(A, f_gen, f_min, freq_segments)
             b_best = b;
         end
     end
-    % disp("Optimization finished");
+    disp("Optimization finished");
 
-    b = A*b_best;
-    B = fft(b);
-    Q = fft(mlbs);
-    u = b;
+    u = A*b_best;
     idx = [specified_indices; length(B)-specified_indices+1];
 end

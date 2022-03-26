@@ -1,5 +1,4 @@
-% This program simulates the frequency-response identification of an LTI system
-% using DIBS
+% This program simulates the frequency-response identification of an LTI system using DIBS
 clear();
 
 % ----------------- Initialization -----------------------------------
@@ -7,18 +6,19 @@ clear();
 f0 = 1000;
 sys = tf([1], [1/(2*pi*f0), 1]);
 
-% DIBS generation
+% DIBS specifications
 f_bw = 2000; % Measurement bandwidth
 A = 1; % Excitation amplitude
-f_gen = 3000; % Generation frequency
-f_min = 10; % Maximum sequence frequency
-freq_specs = [freq_segment_class()];
-freq_specs(1).f_min = 0;
-freq_specs(1).f_max = 2000;
-freq_specs(1).power_ratio = 1;
-freq_specs(1).count = 20;
-freq_specs(1).scale = "log";
-[excitation, N, f_min, idx] = generate_dibs(A, f_gen, f_min, freq_specs);
+f_gen = 6000; % Generation frequency
+f1_max = 10; % Maximum sequence fundamental frequency
+
+% Design the frequency content
+num_freqs = 10;
+freqs = transpose(floor(logspace(1, log10(f_bw), 20)));
+psd_arr = [freqs, ones(20,1)/20-0.001];
+
+% Generate the DIBS
+[excitation, N, f1, idx] = generate_dibs(A, f_gen, f1_max, psd_arr);
 
 P_extra = 1; % Extra periods for transient
 P = 2; % Injection periods (included in Fourier analysis)

@@ -14,8 +14,6 @@
 % Find an optimal amplitude
 amplitude_arr = [];
 
-amp_low = 0.1;
-amp_high = 2;
 amp_best = amp_high;
 amp_prev = amp_low;
 
