@@ -18,6 +18,7 @@ function run_analysis(data_filepath, operations)
     for i=1:length(operations)
         f = operations{i};
         fprintf("---------------- Step #%d ---------------\n", i+1);
+        disp(f);
         f();
     end
     fprintf("---------------- Finished! ---------------\n");

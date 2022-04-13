@@ -13,6 +13,7 @@ function run_experiment(operations, data_filepath)
     for i=1:length(operations)
         f = operations{i};
         fprintf("---------------- Step #%d ---------------\n", i);
+        disp(f);
         f();
         % fprintf("-----------------------------------------\n");
     end
@@ -21,6 +22,6 @@ function run_experiment(operations, data_filepath)
     fprintf("---------------- Step #%d ---------------\n", length(operations)+1);
     fprintf("Saving data to file %s...\n", data_filepath);
     clear("operations", "f", "i");
-    save(data_filepath);
+    save(data_filepath, "-v7.3");
     fprintf("---------------- Finished! ---------------\n");
 end

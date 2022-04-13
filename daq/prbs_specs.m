@@ -1,9 +1,9 @@
 excitation_type = "mlbs";
-A = 0.1;
+A = 0.5;
 f_bw = 2000;
 f_gen = 6000;
-f_min = 100;
-Fs = 500000;
+f1_max = 100;
+Fs = 498000;
 P_idle = 1;
 P_extra = 5;
-P = 3;
+P = 10;

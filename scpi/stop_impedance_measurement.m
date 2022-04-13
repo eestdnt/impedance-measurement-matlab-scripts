@@ -1,0 +1,1 @@
+execute_scpi("COM4", "./scpi/reset-current-perturbation.txt");

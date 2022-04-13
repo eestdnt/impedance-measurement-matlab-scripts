@@ -1,7 +1,7 @@
 % Add subdirectories to MATLAB paths
 addpath('./utils');
-addpath('./measurement');
+addpath('./daq');
 addpath('./analysis');
 addpath('./simulation');
-addpath('./specs');
+addpath('./scpi');
 mkdir('./blob');
