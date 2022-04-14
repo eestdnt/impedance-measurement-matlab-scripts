@@ -5,9 +5,7 @@
 %   A: Excitation amplitude
 %   measured_excitation_signal: Excitation signal
 %   measured_response_signal: Response signal
-%   P_idle: Number of extra injection periods that generate zero excitation
-%   P_extra: Number of extra injection periods
-%   P: Number of injection periods to be analyzed
+%   P: Number of injection periods
 %   Fs: Sampling frequency
 %   f_gen: Excitation generation frequency
 %   N: Number of data points in the discrete form of the excitation waveform
@@ -16,8 +14,8 @@ mult = floor(Fs/f_gen);
 n = log2(N+1);
 
 % Skip extra injection periods
-x = measured_excitation_signal((P_idle+P_extra)*mult*N+1:end);
-y = measured_response_signal((P_idle+P_extra)*mult*N+1:end);
+x = measured_excitation_signal(end-P*mult*N+1:end);
+y = measured_response_signal(end-P*mult*N+1:end);
 
 % Estimate the frequency response
 [Z, fv, X, Y, x, y] = estimate_frf_from_broadband_measurement(x, y, P, Fs);
@@ -33,7 +31,7 @@ fprintf("   + Generation frequency: f_gen = %d Hz\n", f_gen);
 fprintf("   + Sampling frequency: Fs = %d Hz\n", Fs);
 fprintf("   + Frequency resolution: %.4f Hz\n", f_gen/N);
 fprintf("   + Number of applied periods: %d\n", P);
-fprintf("   + Number of estimated transient periods: %d\n", P_idle+P_extra);
+fprintf("   + Number of estimated transient periods: %d\n", P_extra);
 
 if excitation_type == "dibs"
     if exist("psd_arr", "var")
@@ -60,10 +58,10 @@ figure(1), clf();
 tv = transpose(1/Fs:1/Fs:1/Fs*length(measured_excitation_signal));
 subplot(2, 1, 1);
 stairs(tv, measured_excitation_signal), grid("on"), ylabel("Current (A)"), title("Input");
-hold("on"), xline(1/Fs*N*mult*(P_idle+P_extra), "Color", "red"), hold("off");
+hold("on"), xline(1/Fs*(length(measured_excitation_signal) - N*mult*P), "Color", "red"), hold("off");
 subplot(2, 1, 2);
 plot(tv, measured_response_signal), grid("on"), ylabel("Voltage (V)"), title("Output");
-hold("on"), xline(1/Fs*N*mult*(P_idle+P_extra), "Color", "red"), hold("off");
+hold("on"), xline(1/Fs*(length(measured_excitation_signal) - N*mult*P), "Color", "red"), hold("off");
 xlabel("Time (s)");
 sgtitle("Raw signals");
 

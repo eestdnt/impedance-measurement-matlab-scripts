@@ -1,1 +1,1 @@
-execute_scpi("COM4", "./scpi/init-impedance-measurement.txt");
+execute_scpi("COM4", "./scpi/set-external-current-setpoint.txt");

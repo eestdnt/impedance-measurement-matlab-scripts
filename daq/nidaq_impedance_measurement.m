@@ -1,13 +1,8 @@
 % The script generates a PRBS, collects the excitation and response signals and saves them to a MATLAB file
 %   The following variables are assumed to reside in the MATLAB workspace:
-%       A: Excitation amplitude
-%       f_bw: Measurement bandwidth
 %       f_gen: PRBS generation frequency
-%       f1_max: Maximum PRBS frequency
 %       Fs: Sampling frequency
-%       P_idle: Number of initial injection periods that generates a zero signal
-%       P_extra: Number of extra injection periods to cover the transients
-%       P: Number of injection periods
+%       u: Excitation signal
 %   The measurement is done with NiDAQ instrument and uses the following channel configuration:
 %       + AI1: Measurement of excitation signal (current measurement, 10V/A amplification)
 %       + AI2: Measurement of response signal (voltage measurement)
@@ -19,33 +14,14 @@ if mod(int64(Fs), int64(f_gen)) > 0
     return;
 end
 
-% PRBS generation
-[u, N, f1] = generate_mlbs(A, f_gen, f1_max);
-mult = floor(Fs/f_gen);
-P_total = P_idle+P_extra+P;
-n = log2(N+1);
-
-% Print excitation parameters
-disp("Excitation variables:");
-fprintf("   + Amplitude: A = %.4f\n", A);
-fprintf("   + Measurement bandwidth: f_bw = %d Hz\n", f_bw);
-fprintf("   + Sequence order (shift-register length): n = %d\n", n);
-fprintf("   + Sequence length: N = %d\n", N);
-fprintf("   + Generation frequency: f_gen = %d Hz\n", f_gen);
-fprintf("   + Sampling frequency: Fs = %d Hz\n", Fs);
-fprintf("   + Frequency resolution: %.4f Hz\n", f_gen/N);
-fprintf("   + Number of applied periods: P = %d\n", P);
-fprintf("   + Number of extra periods: P_extra = %d\n", P_idle+P_extra);
-
 % Build excitation signal for NiDAQ
-x = repmat(u, P_total, 1);
-x = repmat(x, 1, mult);
-x = reshape(transpose(x), mult*N*P_total, 1);
-x(1:P_idle*N*mult) = 0;
+mult = floor(Fs/f_gen);
+x = repmat(u, 1, mult);
+x = reshape(transpose(x), numel(x), 1);
 excitation_vec = x;
 
 % Estimate running time
-duration = N * P_total / f_gen;
+duration = length(excitation_vec) / Fs;
 fprintf(" -- Estimated measurement time: %.2f seconds (%.2f minutes)\n", duration, duration/60);
 
 % Setup NiDAQ

@@ -72,8 +72,8 @@ function plot_measurements_from_files(varargin)
                     x = measured_excitation_signal((P_idle+P_extra)*mult*N+1:end);
                     y = measured_response_signal((P_idle+P_extra)*mult*N+1:end);
                 else
-                    x = measured_excitation_signal(P_extra*mult*N+1:end);
-                    y = measured_response_signal(P_extra*mult*N+1:end);
+                    x = measured_excitation_signal(end-P*mult*N+1:end);
+                    y = measured_response_signal(end-P*mult*N+1:end);
                 end
                 [Z, fv, ~, ~, ~, ~] = estimate_frf_from_broadband_measurement(x, y, P, Fs);
                 if excitation_type == "dibs"
