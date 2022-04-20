@@ -1,4 +1,4 @@
-# Frequency-response measurement scripts
+# Broadband frequency-response measurement
 
 This repository contains MATLAB scripts for measuring the internal impedance of power-electronic converters and batteries.
 
@@ -25,7 +25,7 @@ init_workspace
 ### Measure impedance with PRBS
 
 ```
-run_experiment({@init_impedance_measurement, @prbs_specs, @nidaq_prbs_impedance_measurement, @stop_impedance_measurement}, "./blob/prbs-test.mat")
+run_experiment({@prbs_specs, @nidaq_prbs_impedance_measurement}, "./blob/prbs-test.mat")
 ```
 
 ### Calculate internal impedance and plot the impedance spectra
