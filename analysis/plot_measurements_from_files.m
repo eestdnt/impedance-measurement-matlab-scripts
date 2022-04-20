@@ -24,27 +24,31 @@ function plot_measurements_from_files(varargin)
     legend_str_arr = strings(nargin, 1);
 
     filepaths = strings(0);
+    filenames = strings(0);
     c = 0;
     % Scan for .mat files in the input filenames and one level down into the directory tree if a provided file is a directory
     for k=1:nargin
         f = varargin{k};
         if isfolder(f)
-            % ft = split(ls(f));
-            ft = ls(f);
+            ft = split(ls(f));
+            % ft = ls(f);
             ft = string(ft);
             for i=1:length(ft)
                 p = strcat(f, strcat("/", ft{i}));
                 if isfile(p) && contains(p, ".mat")
                     c = c+1;
                     filepaths(c) = p;
+                    [~, filenames(c), ~] = fileparts(ft{i});
                 end
             end
         else
             c = c+1;
             filepaths(c) = f;
+            [~, filenames(c), ~] = fileparts(f);
         end
     end
     disp(filepaths);
+    disp(size(filenames));
 
     for k=1:length(filepaths)
         p = filepaths(k);
@@ -69,8 +73,8 @@ function plot_measurements_from_files(varargin)
                 mult = floor(Fs/f_gen);
                 % Skip transients
                 if exist("P_idle", "var")
-                    x = measured_excitation_signal((P_idle+P_extra)*mult*N+1:end);
-                    y = measured_response_signal((P_idle+P_extra)*mult*N+1:end);
+                    x = measured_excitation_signal(end-P*mult*N+1:end);
+                    y = measured_response_signal(end-P*mult*N+1:end);
                 else
                     x = measured_excitation_signal(end-P*mult*N+1:end);
                     y = measured_response_signal(end-P*mult*N+1:end);
@@ -114,7 +118,8 @@ function plot_measurements_from_files(varargin)
         hold("off");
 
         % Update legend
-        legend_str_arr(k) = string(k);
+        % legend_str_arr(k) = string(k);
+        legend_str_arr(k) = filenames(k);
 
         % % Nyquist plot
         % figure(2), clf();
@@ -142,7 +147,7 @@ function plot_measurements_from_files(varargin)
         xlim([f_min, f_max]);
         subplot(2, 1, 2);
         xlim([f_min, f_max]);
-        legend_str_arr = [""; legend_str_arr];
+        legend_str_arr = ["", legend_str_arr];
         legend(legend_str_arr, "Location", "best");
     end
 end
