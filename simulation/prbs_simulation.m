@@ -66,12 +66,12 @@ subplot(2, 1, 1);
 semilogx(fv(idx), db(abs(U(idx))), "LineStyle", "none", "Marker", "o");
 xlim([f1, f_bw]);
 grid("on");
-ylabel("Amplitude (dB)");
+ylabel("Input amplitude (dB)");
 subplot(2, 1, 2);
 semilogx(fv(idx), db(abs(Y(idx))), "LineStyle", "none", "Marker", "o");
 xlim([f1, f_bw]);
 grid("on");
-ylabel("Amplitude (dB)");
+ylabel("Output amplitude (dB)");
 xlabel("Frequency (Hz)");
 sgtitle("Amplitude spectra");
 
@@ -100,5 +100,5 @@ xlim([f1, f_bw]);
 ylabel("Phase (degrees)");
 xlabel("Frequency (Hz)");
 legend(["Reference", "Estimation"], "Location", "best");
-sgtitle("System");
+sgtitle("Bode plot");
 % --------------------------------------------------------------------

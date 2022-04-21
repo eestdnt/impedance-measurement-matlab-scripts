@@ -1,8 +1,8 @@
 function [Z, fv, X, Y, x_averaged, y_averaged] = estimate_frf_from_broadband_measurement(x, y, P, Fs)
 % ESTIMATE_FRF_FROM_BROADBAND_MEASUREMENT Compute frequency-response function.
 %   [Z, fv, X, Y, x_averaged, y_averaged] = estimate_frf_from_broadband_measurement(x, y, P, Fs) computes
-%   the frequency-response estimation of a broadband measurement from excitation vector x, response vector y,
-%   P injection periods and sampling frequency Fs.
+%   the frequency-response estimation of a broadband measurement from excitation vector <x>, response vector <y>,
+%   <P> injection periods and sampling frequency <Fs>.
 
     arguments
         x (:,1) double
