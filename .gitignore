@@ -4,3 +4,5 @@
 *.insyncdl
 *.code-workspace
 *.func-args
+/README.pdf
+/**/files

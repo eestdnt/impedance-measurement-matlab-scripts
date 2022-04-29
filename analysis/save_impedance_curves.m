@@ -1,5 +1,5 @@
 % Plot multiple FRF estimations from multiple measurements
-function plot_measurements_from_files(varargin)
+function save_impedance_curves(varargin)
 
     figure(1), clf();
     subplot(2, 1, 1);
@@ -30,7 +30,7 @@ function plot_measurements_from_files(varargin)
     for k=1:nargin
         f = varargin{k};
         if isfolder(f)
-            % ft = split(ls(f));
+%             ft = split(ls(f));
             ft = ls(f);
             ft = string(ft);
             for i=1:length(ft)
@@ -120,6 +120,10 @@ function plot_measurements_from_files(varargin)
         % Update legend
         % legend_str_arr(k) = string(k);
         legend_str_arr(k) = filenames(k);
+
+        data_filepath = p;
+        save_impedance_to_csv_file;
+        clear("csv_filepath");
 
         % % Nyquist plot
         % figure(2), clf();
