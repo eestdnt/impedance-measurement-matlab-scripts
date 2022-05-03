@@ -13,11 +13,11 @@ function plot_measurements_from_files(varargin)
     grid("on");
     sgtitle("Bode plot");
 
-    % figure(2), clf();
-    % xlabel("Re(Z)");
-    % ylabel("-Im(Z)");
-    % title("Nyquist plot");
-    % grid("on");
+    figure(2), clf();
+    xlabel("Re");
+    ylabel("-Im");
+    title("Nyquist plot");
+    grid("on");
 
     f_min = Inf;
     f_max = 0;
@@ -133,24 +133,13 @@ function plot_measurements_from_files(varargin)
         % legend_str_arr(k) = string(k);
         legend_str_arr(k) = filenames(k);
 
-        % % Nyquist plot
-        % figure(2), clf();
-        % idx = (f_min <= fv_ref) & (fv_ref <= f_max);
-        % zv_ref = mag_ref(idx) .* exp(1j*phase_ref(idx));
-        % idx = (f_min <= fv_prbs) & (fv_prbs <= f_max);
-        % zv_prbs = mag_prbs(idx) .* exp(1j*phase_prbs(idx));
-        % idx = (f_min <= fv_dibs) & (fv_dibs <= f_max);
-        % zv_dibs = mag_dibs(idx) .* exp(1j*phase_dibs(idx));
-        % plot(real(zv_prbs), -imag(zv_prbs), "LineStyle", "none", "Marker", ".", "Color", "blue");
-        % hold("on");
-        % plot(real(zv_dibs), -imag(zv_dibs), "LineStyle", "none", "Marker", "x", "Color", "red");
-        % plot(real(zv_ref), -imag(zv_ref), "LineStyle", "none", "Marker", "o", "Color", "black");
-        % hold("off");
-        % xlabel("Re(Z)");
-        % ylabel("-Im(Z)");
-        % title("Polar plot");
-        % grid("on");
-        % legend(legend_str_arr);
+        % Nyquist plot
+        figure(2);
+        idx = f_min < fv & fv <= f_bw;
+        zv = mag(idx).*exp(1j*phase(idx));
+        hold("on");
+        plot(real(zv), -imag(zv), "LineStyle", "-", "Marker", "x");
+        hold("off");
     end
 
     if length(filepaths)>0
