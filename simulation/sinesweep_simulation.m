@@ -15,7 +15,6 @@ A = 1;
 fv = logspace(1, 3);
 f_gen = 100*fv(end);
 [excitation, seq_len] = generate_sinesweep(A, f_gen, fv);
-N = sum(seq_len);
 
 % figure(1), clf();
 % stairs(excitation);

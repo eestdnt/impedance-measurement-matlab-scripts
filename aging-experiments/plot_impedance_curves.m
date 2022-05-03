@@ -1,9 +1,9 @@
 % tbl = readtable("./blob/aging-tests/cell-2/cycle-7-low.csv");
 
-% cycle_numbers = [2, 3, 4, 6, 7, 8, 9, 10, 11];
-cycle_numbers = [1, 2, 3, 4, 5, 6, 7, 8];
-test_dir = "./blob/aging-tests/cell-1";
-% test_dir = "./blob/aging-tests/cell-2";
+cycle_numbers = [2, 3, 4, 6, 7, 8, 9, 10, 11];
+% cycle_numbers = [1, 2, 3, 4, 5, 6, 7, 8];
+% test_dir = "./aging-experiments/files/cell-1";
+test_dir = "./aging-experiments/files/cell-2";
 
 figure(1), clf();
 subplot(2, 1, 1);

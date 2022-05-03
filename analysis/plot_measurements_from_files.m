@@ -52,7 +52,7 @@ function plot_measurements_from_files(varargin)
 
     for k=1:length(filepaths)
         p = filepaths(k);
-        disp(p);
+        disp("-------------  Load file " + p + " ----------------------");
 
         % Obtain the excitation specification from the measurement metadata
         load(p, "specs");
@@ -72,13 +72,8 @@ function plot_measurements_from_files(varargin)
                 % [Z, fv, sampling_freq, signals, dfts, params] = estimate_frf_from_pbs_measurement(p);
                 mult = floor(Fs/f_gen);
                 % Skip transients
-                if exist("P_idle", "var")
-                    x = measured_excitation_signal(end-P*mult*N+1:end);
-                    y = measured_response_signal(end-P*mult*N+1:end);
-                else
-                    x = measured_excitation_signal(end-P*mult*N+1:end);
-                    y = measured_response_signal(end-P*mult*N+1:end);
-                end
+                x = measured_excitation_signal(end-P*mult*N+1:end);
+                y = measured_response_signal(end-P*mult*N+1:end);
                 [Z, fv, ~, ~, ~, ~] = estimate_frf_from_broadband_measurement(x, y, P, Fs);
                 if excitation_type == "dibs"
                     if exist("idx", "var")
@@ -95,8 +90,25 @@ function plot_measurements_from_files(varargin)
                 mag = abs(Z);
                 phase = unwrap(angle(Z));
             case "sinesweep"
-                % load(p);
-                [Z, fv, ~, ~, ~, ~] = estimate_frf_from_sinesweep_measurement(p);
+                load(p, "measured_excitation_signal", "measured_response_signal", "P_extra", "P", "Fs", "f_bw", "fv", "f_gen");
+                f1 = fv(1);
+                mult = floor(Fs/f_gen);
+                P_total = P + P_extra;
+                % Skip the transients
+                Lu = 0;
+                Lx = 0;
+                x = zeros(floor(length(measured_excitation_signal)/P_total)*P, 1);
+                for i=1:length(fv)
+
+                    f = fv(i);
+                    N = floor(f_gen/f);
+
+                    x(Lx+1:Lx+P*mult*N) = measured_excitation_signal(Lu+P_extra*mult*N+1:Lu+P_total*mult*N);
+                    y(Lx+1:Lx+P*mult*N) = measured_response_signal(Lu+P_extra*mult*N+1:Lu+P_total*mult*N);
+                    Lx = Lx + P*mult*N;
+                    Lu = Lu + P_total*mult*N;
+                end
+                [Z, fv, ~, ~, ~, ~] = estimate_frf_from_sinesweep_measurement(x, y, fv, f_gen, P, Fs);
                 mag = abs(Z);
                 phase = unwrap(angle(Z));
         end
@@ -147,7 +159,7 @@ function plot_measurements_from_files(varargin)
         xlim([f_min, f_max]);
         subplot(2, 1, 2);
         xlim([f_min, f_max]);
-        legend_str_arr = ["", legend_str_arr];
+        % legend_str_arr = ["", legend_str_arr];
         legend(legend_str_arr, "Location", "best");
     end
 end

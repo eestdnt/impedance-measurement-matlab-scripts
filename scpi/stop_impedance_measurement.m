@@ -1,1 +1,1 @@
-execute_scpi("COM4", "./blob/aging-tests/reset-current-setpoint.txt");
+execute_scpi("COM4", "./scpi/reset-current-setpoint.txt");

@@ -4,12 +4,12 @@ The repository contains MATLAB scripts for measuring the internal impedance of a
 
 ## Prerequisites
 
-- MATLAB
+- MATLAB & Simulink
 - MATLAB packages:
     - Signal Processing Toolbox
     - DSP System Toolbox
-    - Simulink
     - System Identification Toolbox
+    - Control System Toolbox
 
 ## Usage
 
@@ -30,7 +30,13 @@ init_workspace
 ### Measure Li-ion cell impedance with PRBS
 
 ```
-run_experiment({@prbs_specs, @nidaq_prbs_impedance_measurement}, "./blob/prbs-test.mat")
+run_experiment({@prbs_specs, @nidaq_impedance_measurement}, "./files/prbs-test.mat")
+```
+
+### Calculate internal impedance and plot the impedance spectra
+
+```
+run_analysis("./files/prbs-test.mat", {@plot_prbs_measurement})
 ```
 
 ### Measure Li-ion cell impedance using scripts for an experiment
@@ -38,13 +44,6 @@ run_experiment({@prbs_specs, @nidaq_prbs_impedance_measurement}, "./blob/prbs-te
 ```
 run_experiment({@init_impedance_measurement, @aging_specs_high, @print_excitation_parameters, @nidaq_impedance_measurement, @stop_impedance_measurement}, "./blob/aging-tests/cell-1-high.mat")
 run_experiment({@init_impedance_measurement, @aging_specs_low, @print_excitation_parameters, @nidaq_impedance_measurement, @stop_impedance_measurement}, "./blob/aging-tests/cell-1-low.mat")
-```
-
-
-### Calculate internal impedance and plot the impedance spectra
-
-```
-run_analysis("./blob/prbs-test.mat", {@plot_prbs_measurement})
 ```
 
 ### Get help with the scripts
