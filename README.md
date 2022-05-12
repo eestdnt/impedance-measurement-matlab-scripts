@@ -1,6 +1,6 @@
 # Impedance measurement scripts using MATLAB and lab instruments
 
-The repository contains MATLAB scripts for measuring the internal impedance of a Lithium-ion battery cell.
+The repository contains MATLAB scripts for measuring the internal impedance of power-electronic devices.
 
 ## Prerequisites
 
