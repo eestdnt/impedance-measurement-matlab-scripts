@@ -10,8 +10,5 @@ if ~exist("csv_filepath", "var")
 end
 
 idx = 0 < fv & fv <= f_bw;
-T = table(fv(idx), real(Z(idx)), imag(Z(idx)));
-T.Properties.VariableNames = {'Frequencies', 'Z_real', 'Z_imag'};
-% writetable(T, csv_filepath);
 writematrix([fv(idx), real(Z(idx)), imag(Z(idx))], csv_filepath);
 fprintf("Impedance data is now written to '%s'!\n", csv_filepath);

@@ -1,5 +1,9 @@
 if ~exist("n", "var")
-    n = log2(N+1);
+    if excitation_type ~= "sinesweep"
+        n = log2(N+1);
+    else
+        n = 0;
+    end
 end
 
 % Print excitation parameters

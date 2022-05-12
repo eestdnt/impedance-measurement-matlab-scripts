@@ -1,4 +1,4 @@
-# Li-ion battery cell impedance measurement
+# Impedance measurement scripts using MATLAB and lab instruments
 
 The repository contains MATLAB scripts for measuring the internal impedance of a Lithium-ion battery cell.
 
@@ -48,7 +48,7 @@ To plot the impedance using the measured data, run
 run_analysis("./files/sinesweep-test.mat", {@plot_sinesweep_measurement})
 ```
 
-## Overlay multiple impedance curves in a single plot using measurement data files
+## Overlay multiple impedance curves in a single plot using measurement raw data files
 
 ```
 plot_measurements_from_files("./files/prbs-test.mat", "./files/sinesweep-test.mat")

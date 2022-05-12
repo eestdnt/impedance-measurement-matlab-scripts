@@ -84,10 +84,10 @@ if ~exist("f1", "var")
 end
 figure(3), clf();
 subplot(2, 1, 1);
-semilogx(fv, db(abs(X)), "LineStyle", "none", "Marker", "o"), grid("on"), ylabel("Amplitude (db)");
+semilogx(fv, db(abs(X)), "LineStyle", "none", "Marker", "o"), grid("on"), ylabel("Excitation amplitude (db)");
 xlim([f1, f_bw]);
 subplot(2, 1, 2);
-semilogx(fv, db(abs(Y)), "LineStyle", "none", "Marker", "o"), grid("on"), ylabel("Amplitude (db)");
+semilogx(fv, db(abs(Y)), "LineStyle", "none", "Marker", "o"), grid("on"), ylabel("Response amplitude (db)");
 xlim([f1, f_bw]);
 xlabel("Frequency (Hz)");
 sgtitle("Amplitude spectra");
