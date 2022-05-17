@@ -30,8 +30,10 @@ function plot_measurements_from_files(varargin)
     for k=1:nargin
         f = varargin{k};
         if isfolder(f)
-            % ft = split(ls(f));
             ft = ls(f);
+            if class(ft) ~= "cell"
+                ft = split(ft);
+            end
             ft = string(ft);
             for i=1:length(ft)
                 p = strcat(f, strcat("/", ft{i}));
