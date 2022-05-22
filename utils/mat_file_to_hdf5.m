@@ -27,21 +27,11 @@ function mat_file_to_hdf5(filepath, output_filepath)
     h5create(output_filepath, "/measurement_bandwidth", 1, DataType="uint32");
     h5create(output_filepath, "/excitation/amplitude", 1, DataType="double");
     h5create(output_filepath, "/excitation/type", 1, DataType="string");
-    h5create(output_filepath, "/excitation/length", 1, DataType="uint64");
     h5create(output_filepath, "/excitation/waveform_datapoints", excitation_length, DataType="double");
     if excitation_type == "dibs"
-        if exist("psd_arr", "var")
-            h5create(output_filepath, "/excitation/specified_freqs", length(psd_arr), DataType = "double")
-            h5create(output_filepath, "/excitation/specified_psd", length(psd_arr), DataType="double");
-        else
-            h5create(output_filepath, "/excitation/specified_freqs", 1, DataType = "double")
-            h5create(output_filepath, "/excitation/specified_psd", 1, DataType="double");
-        end
-        if exist("dibs_idx", "var")
-            h5create(output_filepath, "/excitation/dibs_idx", length(dibs_idx), DataType="double");
-        elseif exist("idx", "var")
-            h5create(output_filepath, "/excitation/dibs_idx", length(idx), DataType="double");
-        end
+        h5create(output_filepath, "/excitation/specified_freqs", length(psd_arr), DataType = "double")
+        h5create(output_filepath, "/excitation/specified_psds", length(psd_arr), DataType="double");
+        h5create(output_filepath, "/excitation/dibs_idx", length(dibs_idx), DataType="double");
     elseif excitation_type == "sinesweep"
         h5create(output_filepath, "/excitation/specified_freqs", length(freqs), DataType = "double")
     end
@@ -58,24 +48,15 @@ function mat_file_to_hdf5(filepath, output_filepath)
     h5write(output_filepath, "/measurement_bandwidth", f_bw);
     h5write(output_filepath, "/excitation/amplitude", A);
     h5write(output_filepath, "/excitation/type", excitation_type);
-    h5write(output_filepath, "/excitation/length", excitation_length);
     if length(u) == excitation_length
         h5write(output_filepath, "/excitation/waveform_datapoints", u);
     else
         h5write(output_filepath, "/excitation/waveform_datapoints", u(1:excitation_length));
     end
     if excitation_type == "dibs"
-        if exist("psd_arr", "var")
-            h5write(output_filepath, "/excitation/specified_freqs", psd_arr(:,1));
-            h5write(output_filepath, "/excitation/specified_psd", psd_arr(:,2));
-        elseif exist("freq_specs", "var") || exist("freq_segments", "var") || true
-            h5write(output_filepath, "/excitation/specified_freqs", psd_arr(:,1));
-        end
-        if exist("dibs_idx", "var")
-            h5write(output_filepath, "/excitation/dibs_idx", dibs_idx);
-        elseif exist("idx", "var")
-            h5write(output_filepath, "/excitation/dibs_idx", idx);
-        end
+        h5write(output_filepath, "/excitation/specified_freqs", psd_arr(:,1));
+        h5write(output_filepath, "/excitation/specified_psds", psd_arr(:,2));
+        h5write(output_filepath, "/excitation/dibs_idx", dibs_idx);
     elseif excitation_type == "sinesweep"
         h5write(output_filepath, "/excitation/specified_freqs", freqs);
     end
