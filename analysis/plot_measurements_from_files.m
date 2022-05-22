@@ -57,20 +57,12 @@ function plot_measurements_from_files(varargin)
         disp("-------------  Load file " + p + " ----------------------");
 
         % Obtain the excitation specification from the measurement metadata
-        load(p, "specs");
-        if exist("specs", "var")
-            excitation_type = specs.type;
-        else
-            load(p, "excitation_type");
-            if ~exist("excitation_type", "var")
-                excitation_type = "mlbs";
-            end
-        end
+        load(p, "excitation_type");
         disp(" + Excitation type: " + excitation_type);
 
         switch excitation_type
             case {"mlbs", "dibs"}
-                load(p, "measured_excitation_signal", "measured_response_signal", "P_extra", "N", "P", "Fs", "f_bw", "P_idle", "f1", "f_gen", "idx", "dibs_idx");
+                load(p, "measured_excitation_signal", "measured_response_signal", "P_extra", "N", "P", "Fs", "f_bw", "f1", "f_gen", "idx", "dibs_idx");
                 % [Z, fv, sampling_freq, signals, dfts, params] = estimate_frf_from_pbs_measurement(p);
                 mult = floor(Fs/f_gen);
                 % Skip transients
@@ -78,13 +70,8 @@ function plot_measurements_from_files(varargin)
                 y = measured_response_signal(end-P*mult*N+1:end);
                 [Z, fv, ~, ~, ~, ~] = estimate_frf_from_broadband_measurement(x, y, P, Fs);
                 if excitation_type == "dibs"
-                    if exist("idx", "var")
-                        fv = fv(idx);
-                        Z = Z(idx);
-                    elseif exist("dibs_idx", "var")
-                        fv = fv(dibs_idx);
-                        Z = Z(dibs_idx);
-                    end
+                    fv = fv(dibs_idx);
+                    Z = Z(dibs_idx);
                 end
                 idx = (f1 <= fv) & (fv <= f_bw);
                 fv = fv(idx);

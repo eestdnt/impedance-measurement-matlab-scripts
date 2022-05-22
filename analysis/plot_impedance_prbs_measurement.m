@@ -31,26 +31,17 @@ fprintf("   + Generation frequency: f_gen = %d Hz\n", f_gen);
 fprintf("   + Sampling frequency: Fs = %d Hz\n", Fs);
 fprintf("   + Frequency resolution: %.4f Hz\n", f_gen/N);
 fprintf("   + Number of applied periods: %d\n", P);
-fprintf("   + Number of estimated transient periods: %d\n", P_extra);
+% fprintf("   + Number of estimated transient periods: %d\n", P_extra);
 
 if excitation_type == "dibs"
-    if exist("psd_arr", "var")
-        fprintf(" - Frequency content:\n");
-        for k = 1:length(psd_arr)
-            fprintf(" + Frequency = %.4f Hz, power (percentage) = %.2f %%\n", psd_arr(k,1), psd_arr(k,2)*100);
-        end
+    fprintf(" - Frequency content:\n");
+    for k = 1:length(psd_arr)
+        fprintf(" + Frequency = %.4f Hz, power (percentage) = %.2f %%\n", psd_arr(k,1), psd_arr(k,2)*100);
     end
-    if exist("dibs_idx", "var")
-        fv = fv(dibs_idx);
-        Z = Z(dibs_idx);
-        X = X(dibs_idx);
-        Y = Y(dibs_idx);
-    else
-        fv = fv(idx);
-        Z = Z(idx);
-        X = X(idx);
-        Y = Y(idx);
-    end
+    fv = fv(dibs_idx);
+    Z = Z(dibs_idx);
+    X = X(dibs_idx);
+    Y = Y(dibs_idx);
 end
 
 % Raw data plot
@@ -79,9 +70,6 @@ xlabel("Time (s)");
 sgtitle("Averaged signals");
 
 % Plot averaged signal power spectra
-if ~exist("f1", "var")
-    f1 = fv(2);
-end
 figure(3), clf();
 subplot(2, 1, 1);
 semilogx(fv, db(abs(X)), "LineStyle", "none", "Marker", "o"), grid("on"), ylabel("Excitation amplitude (db)");
@@ -105,7 +93,7 @@ sgtitle("Impedance Bode plot");
 % Nyquist plot
 figure(5), clf();
 idx = 0 < fv & fv <= f_bw;
-zv = abs(Z(idx)).*exp(1j*angle(Z(idx)));
+zv = abs(Z(idx)) .* exp(1j*angle(Z(idx)));
 plot(real(zv), -imag(zv), "LineStyle", "none", "Marker", "x");
 xlabel("Re(Z)");
 ylabel("-Im(Z)");

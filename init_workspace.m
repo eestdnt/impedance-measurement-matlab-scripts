@@ -6,6 +6,6 @@ addpath("./simulation");
 addpath("./scpi");
 addpath("./aging-experiments");
 
-if ~exist("./aging-experiments/files", "dir")
+if ~isfolder("./aging-experiments/files")
     mkdir("./aging-experiments/files");
 end

@@ -68,16 +68,13 @@ xlabel("Time (s)");
 sgtitle("Averaged signals");
 
 % Plot averaged signal power spectra
-if ~exist("f1", "var")
-    f1 = fv(2);
-end
 figure(3), clf();
 subplot(2, 1, 1);
 semilogx(fv, db(abs(X)), "LineStyle", "none", "Marker", "o"), grid("on"), ylabel("Excitation amplitude (db)");
-xlim([f1, f_bw]);
+xlim([fv(1), f_bw]);
 subplot(2, 1, 2);
 semilogx(fv, db(abs(Y)), "LineStyle", "none", "Marker", "o"), grid("on"), ylabel("Response amplitude (db)");
-xlim([f1, f_bw]);
+xlim([fv(1), f_bw]);
 xlabel("Frequency (Hz)");
 sgtitle("Amplitude spectra");
 
@@ -85,10 +82,10 @@ sgtitle("Amplitude spectra");
 figure(4), clf();
 subplot(2, 1, 1);
 semilogx(fv, abs(Z), "LineStyle", "none", "Marker", "x");
-xlim([f1, f_bw]), ylabel("Magnitude (\Omega)"), grid("on");
+xlim([fv(1), f_bw]), ylabel("Magnitude (\Omega)"), grid("on");
 subplot(2, 1, 2);
 semilogx(fv, 180/pi*unwrap(angle(Z)), "LineStyle", "none", "Marker", "x");
-xlim([f1, f_bw]), ylabel("Phase (deg)"), grid("on"), xlabel("Frequency (Hz)");
+xlim([fv(1), f_bw]), ylabel("Phase (deg)"), grid("on"), xlabel("Frequency (Hz)");
 sgtitle("Impedance Bode plot");
 
 % Nyquist plot

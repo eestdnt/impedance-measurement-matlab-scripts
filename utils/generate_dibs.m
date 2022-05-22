@@ -11,14 +11,14 @@ function [u, N, f1, idx] = generate_dibs(A, f_gen, f1_max, psd_arr)
     end
 
     % Design DIBS based on an MLBS
-    n = ceil(log2(f_gen/f1_max + 1));
-    N = 2^n - 1;
-    f1 = f_gen/N;
-    D = zeros(N, 1);
+    n = ceil(log2(f_gen/f1_max + 1)); % PRBS sequence order
+    N = 2^n - 1; % Sequence length
+    f1 = f_gen/N; % Fundamental frequency
+    D = zeros(N, 1); % Specified harmonic spectrum
 
-    mid_idx = floor((N-1)/2);
-    kv = transpose(0:mid_idx);
-    specified_indices = [];
+    mid_idx = floor((N-1)/2); % Obtain frequency index of Nyquist frequency
+    kv = transpose(0:mid_idx); % Obtain index array up to the Nyquist frequency
+    specified_indices = []; % Indicies from the frequency grid that are specified in the DIBS
 
     if sum(psd_arr(:,2)) > 1
         disp("Total specified energy is greater than the total sequence energy, aborting!");
@@ -26,8 +26,10 @@ function [u, N, f1, idx] = generate_dibs(A, f_gen, f1_max, psd_arr)
     end
 
     for i=1:size(psd_arr, 1)
-        f = psd_arr(i,1);
-        p = psd_arr(i,2) * A^2 * N^2;
+        f = psd_arr(i,1); % Specified frequency
+        p = psd_arr(i,2) * A^2 * N^2; % Specified power density
+
+        % Find the closest index from the frequency grid to the specified frequency
         k_best = 0;
         idx = 1;
         for j=1:length(kv)
@@ -37,43 +39,24 @@ function [u, N, f1, idx] = generate_dibs(A, f_gen, f1_max, psd_arr)
                 idx = j;
             end
         end
-        D(idx) = sqrt(p);
-        specified_indices = [specified_indices; idx];
+
+        D(idx) = sqrt(p); % Assign the specified power density to the found harmonic
+        specified_indices = [specified_indices; idx]; % Add the found harmonic index to the list
     end
     specified_indices = unique(specified_indices);
 
-    % for k = 1:length(freq_segments)
-    %     f_min = freq_segments(k).f_min;
-    %     f_max = freq_segments(k).f_max;
-    %     power = A^2 * N^2 * freq_segments(k).power_ratio;
-    %     count = freq_segments(k).count;
-
-    %     selected_idx = kv((kv*f_gen/N > f_min) & (kv*f_gen/N <= f_max))+1;
-
-    %     if freq_segments(k).scale == "log"
-    %         specified_idx = transpose(floor(logspace(log10(selected_idx(1)), log10(selected_idx(end)), count)));
-    %     else
-    %         specified_idx = transpose(floor(linspace(selected_idx(1), selected_idx(end), count))); % Linear scale
-    %     end
-    %     specified_idx = unique(specified_idx);
-    %     specified_indices = [specified_indices; specified_idx];
-
-    %     D(selected_idx) = 0;
-    %     D(specified_idx) = sqrt(power);
-    % end
-
-    % Mirror the DFT sequence values
+    % Mirror the DFT sequence values (to conserve the DFT properties)
     idx = transpose(2:floor((N-1)/2)+1);
     D(N-idx+2) = conj(D(idx));
 
     % VAN DEN BOS algorithm
     disp("Optimization started");
 
-    d = real(ifft(D));
+    d = real(ifft(D)); % Obtain the time-domain binary waveform
 
-    J_best = Inf;
-    b_best = zeros(size(d));
-    num_tries = 1000;
+    J_best = Inf; % Best cost value
+    b_best = zeros(size(d)); % Time-domain sequence with the best cost value
+    num_tries = 1000; % Number of optimization runs
 
     for t=1:num_tries
 
@@ -97,10 +80,11 @@ function [u, N, f1, idx] = generate_dibs(A, f_gen, f1_max, psd_arr)
             B = fft(b);
             phi = angle(B);
 
-            % Calculate error
+            % Calculate cost function (error between specified and optimized)
             J = sum((abs(B)-abs(D)).^2);
         end
 
+        % Update the best cost value
         if J < J_best
             J_best = J;
             b_best = b;
@@ -108,6 +92,6 @@ function [u, N, f1, idx] = generate_dibs(A, f_gen, f1_max, psd_arr)
     end
     disp("Optimization finished");
 
-    u = A*b_best;
-    idx = [specified_indices; length(B)-specified_indices+1];
+    u = A*b_best; % Time-domain signal with specified amplitude
+    idx = [specified_indices; length(B)-specified_indices+1]; % Full DFT indicies
 end
