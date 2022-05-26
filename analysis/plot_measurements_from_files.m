@@ -129,6 +129,16 @@ function plot_measurements_from_files(varargin)
         hold("on");
         plot(real(zv), -imag(zv), "LineStyle", "-", "Marker", "x");
         hold("off");
+
+        % Capacitance plot
+        figure(3);
+        subplot(2, 1, 1);
+        semilogx(fv, 1 ./ (2*pi*fv*abs(zv)), "LineStyle", "-", "Marker", "x");
+        xlim([fv(1), f_bw]), ylabel("Capacitance (F)"), grid("on");
+        subplot(2, 1, 2);
+        semilogx(fv, 180/pi*unwrap(angle(zv)), "LineStyle", "-", "Marker", "x");
+        xlim([fv(1), f_bw]), ylabel("Phase (deg)"), grid("on"), xlabel("Frequency (Hz)");
+        sgtitle("Impedance Bode plot");
     end
 
     if length(filepaths)>0

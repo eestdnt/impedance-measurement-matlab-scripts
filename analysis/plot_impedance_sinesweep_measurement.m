@@ -81,10 +81,10 @@ sgtitle("Amplitude spectra");
 % Bode plot
 figure(4), clf();
 subplot(2, 1, 1);
-semilogx(fv, abs(Z), "LineStyle", "none", "Marker", "x");
+semilogx(fv, abs(Z), "LineStyle", "-", "Marker", "x");
 xlim([fv(1), f_bw]), ylabel("Magnitude (\Omega)"), grid("on");
 subplot(2, 1, 2);
-semilogx(fv, 180/pi*unwrap(angle(Z)), "LineStyle", "none", "Marker", "x");
+semilogx(fv, 180/pi*unwrap(angle(Z)), "LineStyle", "-", "Marker", "x");
 xlim([fv(1), f_bw]), ylabel("Phase (deg)"), grid("on"), xlabel("Frequency (Hz)");
 sgtitle("Impedance Bode plot");
 
@@ -96,3 +96,10 @@ plot(real(zv), -imag(zv), "LineStyle", "none", "Marker", "x");
 xlabel("Re(Z)");
 ylabel("-Im(Z)");
 title("Impedance nyquist plot"), grid("on");
+
+% Capacitance plot
+figure(6), clf();
+semilogx(fv, 1 ./ (2*pi*fv.*abs(Z)), "LineStyle", "-", "Marker", "x");
+xlim([fv(1), f_bw]), ylabel("Capacitance (F)"), grid("on");
+xlabel("Frequency (Hz)");
+sgtitle("Capacitance plot");

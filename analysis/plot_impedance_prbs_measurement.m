@@ -83,8 +83,8 @@ sgtitle("Amplitude spectra");
 % Bode plot
 figure(4), clf();
 subplot(2, 1, 1);
-semilogx(fv, db(abs(Z)), "LineStyle", "none", "Marker", "x");
-xlim([f1, f_bw]), ylabel("Amplitude (db)"), grid("on");
+semilogx(fv, abs(Z), "LineStyle", "none", "Marker", "x");
+xlim([f1, f_bw]), ylabel("Amplitude (Ohm)"), grid("on");
 subplot(2, 1, 2);
 semilogx(fv, 180/pi*unwrap(angle(Z)), "LineStyle", "none", "Marker", "x");
 xlim([f1, f_bw]), ylabel("Phase (deg)"), grid("on"), xlabel("Frequency (Hz)");

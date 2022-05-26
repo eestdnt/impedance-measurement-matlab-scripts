@@ -31,23 +31,14 @@ daqreset();
 dq = daq("ni");
 dq.Rate = Fs;
 
-% Setup input channels
-ai = addinput(dq, device_name, [1, 2], "Voltage");
-ai(1).Range = [-1 1]; % Measured current
-ai(2).Range = [-5 5]; % Measured voltage
-
 % Setup output channels
 ao = addoutput(dq, device_name, [0], "Voltage");
-ao(1).Range = [-10 10]; % PRBS voltage perturbation by linear amplifier
+ao(1).Range = [-10 10]; % Voltage perturbation by linear amplifier
 
 % Start the acquisition
-disp("Measurement starts now...");
-[data, ~, ~] = readwrite(dq, excitation_vec, "OutputFormat", "Matrix");
-disp("Measurement stopped!");
-
-% Format the result
-measured_excitation_signal = 10*data(:,1);  % 10A/V amplification for current measurement
-measured_response_signal = data(:,2); % Voltage measurement
+disp("Injection starts now...");
+write(dq, excitation_vec);
+disp("Injection stopped!");
 
 % Clean unused variables
 clear("ai", "ao", "dq", "data", "device_name", "m", "st");

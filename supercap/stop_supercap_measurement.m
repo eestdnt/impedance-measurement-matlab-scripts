@@ -1,0 +1,1 @@
+execute_scpi("COM4", "./supercap/zero-current-setpoint.txt");
