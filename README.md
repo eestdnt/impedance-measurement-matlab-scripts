@@ -1,6 +1,4 @@
-# Impedance measurement scripts using MATLAB and lab instruments
-
-The repository contains MATLAB scripts for measuring the internal impedance of power-electronic devices.
+# MATLAB scripts for measuring power-electronic device internal impedance
 
 ## Prerequisites
 
@@ -28,24 +26,24 @@ init_workspace
 
 To measure a cell impedance with PRBS, run with
 ```
-run_experiment({@init_impedance_measurement, @prbs_specs, @print_excitation_parameters, @nidaq_impedance_measurement, @stop_impedance_measurement}, "./files/prbs-test.mat")
+run_experiment({@init_batt_imp_meas, @prbs_specs, @print_excitation_parameters, @nidaq_galvanostatic, @stop_batt_imp_meas}, "./files/prbs_test.mat")
 ```
 
 To plot the impedance using the measured data, run
 ```
-run_analysis("./files/prbs-test.mat", {@plot_prbs_measurement})
+run_analysis("./files/prbs-test.mat", {@plot_impedance_prbs_measurement})
 ```
 
 ## Sinesweep measurement
 
 To measure a cell impedance with sinesweep, run
 ```
-run_experiment({@init_impedance_measurement, @sinesweep_specs, @print_excitation_parameters, @nidaq_impedance_measurement, @stop_impedance_measurement}, "./files/sinesweep-test.mat")
+run_experiment({@init_batt_imp_meas, @sinesweep, @print_excitation_parameters, @nidaq_galvanostatic, @stop_batt_imp_meas}, "./files/sinesweep_test.mat")
 ```
 
 To plot the impedance using the measured data, run
 ```
-run_analysis("./files/sinesweep-test.mat", {@plot_sinesweep_measurement})
+run_analysis("./files/sinesweep-test.mat", {@plot_impedance_sinesweep_measurement})
 ```
 
 ## Overlay multiple impedance curves in a single plot using measurement raw data files

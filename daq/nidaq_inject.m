@@ -1,11 +1,9 @@
-% The script generates a PRBS, collects the excitation and response signals and saves them to a MATLAB file
+% The script simply injects a current disturbance
 %   The following variables are assumed to reside in the MATLAB workspace:
 %       f_gen: PRBS generation frequency
 %       Fs: Sampling frequency
 %       u: Excitation signal
 %   The measurement is done with NiDAQ instrument and uses the following channel configuration:
-%       + AI1: Measurement of excitation signal (current measurement, 10V/A amplification)
-%       + AI2: Measurement of response signal (voltage measurement)
 %       + AO0: Generation of excitation signal (current disturbance)
 
 % Check that sampling frequency is a multiple of generation frequency
@@ -41,4 +39,4 @@ write(dq, excitation_vec);
 disp("Injection stopped!");
 
 % Clean unused variables
-clear("ai", "ao", "dq", "data", "device_name", "m", "st");
+clear("ai", "ao", "dq", "device_name", "m", "st");

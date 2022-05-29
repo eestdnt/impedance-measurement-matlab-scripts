@@ -1,15 +1,15 @@
 excitation_type = "sinesweep";
 
-A = 0.2;
+A = 0.5;
 f_bw = 1000;
 fv = logspace(1, 3); % 50 logarithmically equally spaced points between 10 and 1000
-f_gen = 20*fv(end);
+f_gen = 100*fv(end);
 [excitation, seq_len] = generate_sinesweep(A, f_gen, fv);
 N = sum(seq_len);
 Fs = 10*f_gen; % Sampling frequency
 
-P_extra = 1; % Extra periods for transient
-P = 2; % Injection periods (included in Fourier analysis)
+P_extra = 0; % Extra periods in the beginning
+P = 1000; % Injection periods (included in Fourier analysis)
 P_total = P_extra + P;
 
 % Repeat each sinewave for P_total periods
@@ -25,3 +25,7 @@ for k=1:length(fv)
     len = len + N;
     L = L + P_total*N;
 end
+
+figure(1), clf();
+plot(u, "LineStyle", "stairs");
+grid("on");
